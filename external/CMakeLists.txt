@@ -80,3 +80,21 @@ if (BLACKSMITH_ENABLE_JSON)
     set(MESSAGE_QUIET OFF)
     message(STATUS "Fetching external dependency nlohmann/json -- done!")
 endif()
+
+# === PYBIND11 ================================================================
+
+if (BLACKSMITH_ENABLE_PYBIND)
+    message(STATUS "Fetching external dependency pybind11")
+    set(MESSAGE_QUIET ON)
+
+    FetchContent_Declare(
+            pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11.git
+            GIT_TAG v2.8.1
+    )
+
+    FetchContent_MakeAvailable(pybind11)
+
+    set(MESSAGE_QUIET OFF)
+    message(STATUS "Fetching external dependency pybind11 -- done!")
+endif()

@@ -19,6 +19,14 @@ set(
         FORCE
 )
 
+set(
+        BLACKSMITH_ENABLE_PYBIND
+        ON
+        CACHE BOOL
+        "Generate pybind11 Python bindings."
+        FORCE
+)
+
 string(ASCII 27 ESC)
 
 # === DEFINITIONS ==============================================================
@@ -44,6 +52,11 @@ if (ret EQUAL "0")
 endif ()
 
 # === DEPENDENCIES =============================================================
+
+if(BLACKSMITH_ENABLE_PYBIND)
+    # Makes redistribution easier.
+    set(ASMJIT_STATIC TRUE)
+endif()
 
 add_subdirectory(external)
 
@@ -132,6 +145,46 @@ if (BLACKSMITH_ENABLE_JITTING)
             ENABLE_JITTING
     )
 endif ()
+
+if (BLACKSMITH_ENABLE_PYBIND)
+    pybind11_add_module(
+            pyblacksmith
+            src/Bindings.cpp
+    )
+
+    target_link_libraries(
+            pyblacksmith
+            PRIVATE
+            bs
+    )
+
+    set_target_properties(
+            pyblacksmith
+            PROPERTIES
+            OUTPUT_NAME
+            _blacksmith
+    )
+
+    target_compile_options(
+            asmjit
+            PRIVATE
+            -fPIC
+    )
+
+    target_compile_options(
+            bs
+            PRIVATE
+            -fPIC
+    )
+
+    if (BLACKSMITH_ENABLE_JITTING)
+        target_link_libraries(
+                pyblacksmith
+                PRIVATE
+                asmjit
+        )
+    endif()
+endif()
 
 # === BLACKSMITH ===============================================================
 
