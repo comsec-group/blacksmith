@@ -16,6 +16,8 @@ Following, we quickly describe how to build and run Blacksmith.
 
 Blacksmith has been tested on Ubuntu 18.04 LTS with Linux kernel 4.15.0. As the CMakeLists we ship with Blacksmith downloads all required dependencies at compile time, there is no need to install any package other than g++ (>= 8) and cmake (>= 3.14).
 
+**NOTE**: The DRAM address functions that are hard-coded in [DRAMAddr.cpp](https://github.com/comsec-group/blacksmith/blob/public/src/Memory/DRAMAddr.cpp) assume an Intel Core i7-8700K. For any other microarchitecture, you will need to first reverse-engineer these functions (e.g., using [DRAMA](https://github.com/IAIK/drama) or [TRResspass' DRAMA](https://github.com/vusec/trrespass/tree/master/drama)) and then update the matrices in this class accordingly.
+
 To facilitate the development, we also provide a Docker container (see [Dockerfile](docker/Dockerfile)) where all required tools and libraries are installed. This container can be configured, for example, as remote host in the CLion IDE, which automatically transfers the files via SSH to the Docker container (i.e., no manual mapping required).
 
 ### Building Blacksmith
