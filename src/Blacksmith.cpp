@@ -1,6 +1,12 @@
 #include "Blacksmith.hpp"
 
 #include <sys/resource.h>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <array>
 
 #include "Forges/TraditionalHammerer.hpp"
 #include "Forges/FuzzyHammerer.hpp"
@@ -10,8 +16,52 @@
 
 ProgramArguments program_args;
 
+int check_cpu() {
+  std::array<char, 128> buffer{};
+  std::string cpu_model;
+  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("cat /proc/cpuinfo | grep \"model name\" | cut -d':' -f2 | awk '{$1=$1;print}' | head -1", "r"), pclose);
+  if (!pipe) {
+    throw std::runtime_error("popen() failed!");
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    cpu_model += buffer.data();
+  }
+
+  Logger::log_info("Detecting CPU model:");
+  Logger::log_data(format_string("%s", cpu_model.c_str()));
+
+  std::vector<std::string> supported_cpus = {
+      // Coffee Lake
+      "i5-8400",
+      "i5-8500",
+      "i5-8600",
+      "i5-9400",
+      "i5-9500",
+      "i5-9600",
+      "i7-8086",
+      "i7-8700",
+      "i7-9700",
+      "i7-9900"
+  };
+
+  bool cpu_supported = false;
+  for (const auto &model : supported_cpus) {
+    cpu_supported |= (cpu_model.find(model) != std::string::npos);
+  }
+
+  if (!cpu_supported) {
+    Logger::log_error("CPU model is not supported. You need to run DRAMA to update the DRAM address matrices. See the README.md for details.");
+    exit(EXIT_FAILURE);
+  }
+
+  return cpu_supported;
+}
+
 int main(int argc, char **argv) {
   Logger::initialize();
+
+  // check if the system's CPU is supported by our hard-coded DRAM address matrices
+  check_cpu();
 
   handle_args(argc, argv);
 
