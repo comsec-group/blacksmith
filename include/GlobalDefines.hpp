@@ -46,7 +46,7 @@ uint64_t static inline GB(uint64_t value) {
 // number of rounds to hammer
 #define HAMMER_ROUNDS 1000000
 
-// threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
+// threshold to distinguish between row buffer miss (t > THRESH) and row buffer hit (t < THRESH)
 #define THRESH 495  // worked best on DIMM 6
 //#define THRESH 430  // worked best on DIMM 18
 
