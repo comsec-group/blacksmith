@@ -47,8 +47,7 @@ uint64_t static inline GB(uint64_t value) {
 #define HAMMER_ROUNDS 1000000
 
 // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
-#define THRESH 495  // worked best on DIMM 6
-//#define THRESH 430  // worked best on DIMM 18
+#define THRESH 330  // luca: N.B. that we have different timing function than orig blacksmith
 
 // number of conflicting addresses to be determined for each bank
 #define NUM_TARGETS 10
@@ -56,8 +55,10 @@ uint64_t static inline GB(uint64_t value) {
 // maximum number of aggressor rows
 #define MAX_ROWS 30
 
-// number of banks in the system
-#define NUM_BANKS 16
+// number of banks in the system. luca: we search for NUM_BANKS sets/pools of conflicting addrs in 
+//void DramAnalyzer::find_bank_conflicts. Thus this should be RANK*BANK e.g. number of sets e.g. 32 if we have 2 Ranks with 16 banks
+//but i am not 100% sure. Make sure this is in sync with the supplied DRAM config
+#define NUM_BANKS 32
 
 // number of active DIMMs in the system
 #define DIMM 1
