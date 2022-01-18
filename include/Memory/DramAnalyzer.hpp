@@ -31,18 +31,26 @@ class DramAnalyzer {
 
   /// Measures the time between accessing two addresses.
   static int inline measure_time(volatile char *a1, volatile char *a2) {
-    uint64_t before, after;
-    before = rdtscp();
-    lfence();
+    uint64_t before, after,sum,delta;
+    sum = 0;
+
     for (size_t i = 0; i < DRAMA_ROUNDS; i++) {
-      (void)*a1;
-      (void)*a2;
-      clflushopt(a1);
-      clflushopt(a2);
-      mfence();
+        mfence();
+        before = rdtscp();
+        *a1;
+        *a2;
+        after = rdtscp();
+        mfence();
+        delta = after-before;
+        if( delta < 200 || delta > 430 ) { //reject outliers
+			    i--; //if i =0; the i++ from the loop and will set it to 0 again, so no underflow
+	      } else {
+        	sum += delta;
+		    }
+        clflushopt(a1);
+        clflushopt(a2);
     }
-    after = rdtscp();
-    return (int) ((after - before)/DRAMA_ROUNDS);
+    return (int)((sum) / DRAMA_ROUNDS);
   }
 
   std::vector<uint64_t> get_bank_rank_functions();
