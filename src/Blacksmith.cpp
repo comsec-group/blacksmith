@@ -31,17 +31,8 @@ int check_cpu() {
   Logger::log_data(format_string("%s", cpu_model.c_str()));
 
   std::vector<std::string> supported_cpus = {
-      // Coffee Lake
-      "i5-8400",
-      "i5-8500",
-      "i5-8600",
-      "i5-9400",
-      "i5-9500",
-      "i5-9600",
-      "i7-8086",
-      "i7-8700",
-      "i7-9700",
-      "i7-9900"
+      //our processor
+      "i5-6400"
   };
 
   bool cpu_supported = false;
@@ -73,10 +64,12 @@ int main(int argc, char **argv) {
   if (ret!=0) Logger::log_error("Instruction setpriority failed.");
 
   // allocate a large bulk of contiguous memory
+  Logger::log_info("allocating memory...");
   Memory memory(true);
   memory.allocate_memory(MEM_SIZE);
 
   // find address sets that create bank conflicts
+  Logger::log_info("finding bank conflicts...");
   DramAnalyzer dram_analyzer(memory.get_starting_address());
   dram_analyzer.find_bank_conflicts();
   if (program_args.num_ranks != 0) {
@@ -85,13 +78,17 @@ int main(int argc, char **argv) {
     Logger::log_error("Program argument '--ranks <integer>' was probably not passed. Cannot continue.");
     exit(EXIT_FAILURE);
   }
+
+  Logger::log_info("loading dram config");
   // initialize the DRAMAddr class to load the proper memory configuration
+  //luca initialize the global Config variable for memory with the data from the config file we edited
   DRAMAddr::initialize(dram_analyzer.get_bank_rank_functions().size(), memory.get_starting_address());
 
   // count the number of possible activations per refresh interval, if not given as program argument
   if (program_args.acts_per_ref==0)
     program_args.acts_per_ref = dram_analyzer.count_acts_per_ref()*2;
 
+  Logger::log_info("Jumping to hammering logic");
   if (!program_args.load_json_filename.empty()) {
     ReplayingHammerer replayer(memory);
     if (program_args.sweeping) {
