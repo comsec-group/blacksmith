@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 by ETH Zurich.
+ * Licensed under the MIT License, see LICENSE file for more details.
+ */
+
 #ifndef DRAMANALYZER
 #define DRAMANALYZER
 

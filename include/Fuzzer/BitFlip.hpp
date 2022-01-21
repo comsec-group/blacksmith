@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 by ETH Zurich.
+ * Licensed under the MIT License, see LICENSE file for more details.
+ */
+
 #ifndef BLACKSMITH_INCLUDE_FUZZER_BITFLIP_HPP_
 #define BLACKSMITH_INCLUDE_FUZZER_BITFLIP_HPP_
 
