@@ -4,7 +4,11 @@
 #include <unordered_set>
 
 DramAnalyzer::DramAnalyzer(BlacksmithConfig &config, volatile char *target) :
-  config(config), start_address(target) {}
+  config(config), start_address(target) {
+  std::random_device rd;
+  gen = std::mt19937(rd());
+  dist = std::uniform_int_distribution<>(0, std::numeric_limits<int>::max());
+}
 
 size_t DramAnalyzer::count_acts_per_trefi() {
   const int ROW_LENGTH = 64;
@@ -81,4 +85,15 @@ size_t DramAnalyzer::count_acts_per_trefi(volatile char *a, volatile char *b) {
   Logger::log_data(format_string("num_acts_per_tREFI: %lu", activations));
 
   return activations;
+}
+
+std::vector<std::tuple<uint64_t, uint64_t, uint64_t>> DramAnalyzer::measure_timings(size_t sample_size) {
+  std::vector<std::tuple<uint64_t, uint64_t, uint64_t>> result;
+  for( size_t sampleIdx = 0; sampleIdx < sample_size; sampleIdx++) {
+    auto a1 = start_address + (dist(gen)%(config.memory_size/64))*64;
+    auto a2 = start_address + (dist(gen)%(config.memory_size/64))*64;
+    auto timing = measure_time(a1, a2, config.drama_rounds);
+    result.emplace_back(std::make_tuple(reinterpret_cast<std::uintptr_t>(a1),reinterpret_cast<std::uintptr_t>(a2),timing ));
+  }
+  return result;
 }

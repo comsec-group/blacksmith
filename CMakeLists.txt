@@ -161,7 +161,7 @@ target_link_libraries(
         argagg
 )
 
-# === Tools # === BLACKSMITH ===================================================
+# === DetermineConflictTiming Tool # === BLACKSMITH ============================
 
 add_executable(
         determineConflictThresh

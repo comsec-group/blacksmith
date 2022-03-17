@@ -19,8 +19,19 @@ class DramAnalyzer {
 
   volatile char *start_address;
 
+  std::mt19937 gen;
+
+  std::uniform_int_distribution<int> dist;
+
  public:
   explicit DramAnalyzer(BlacksmithConfig &config, volatile char *target);
+
+  /**
+   * Measure access timing between random addresses. Usefull for determining the row conflict timing
+   * @param sample_size amount of measurements to perform
+   * @return tuples (vaddr1,vaddr2,access time)
+   */
+  std::vector<std::tuple<uint64_t,uint64_t,uint64_t>> measure_timings(size_t sample_size);
 
   /// Measures the time between accessing two addresses.
   static int inline measure_time(volatile char *a1, volatile char *a2, size_t rounds) {
