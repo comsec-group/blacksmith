@@ -161,6 +161,30 @@ target_link_libraries(
         argagg
 )
 
+# === Tools # === BLACKSMITH ===================================================
+
+add_executable(
+        determineConflictThresh
+        src/DetermineConflictThresh.cpp
+)
+
+target_link_libraries(
+        determineConflictThresh
+        PRIVATE
+        bs
+)
+
+add_executable(
+        determineActsPerRef
+        src/DetermineActsPerRef.cpp
+)
+
+target_link_libraries(
+        determineActsPerRef
+        PRIVATE
+        bs
+)
+
 # === CLEANUP ==================================================================
 
 unset(BLACKSMITH_ENABLE_JSON CACHE)
