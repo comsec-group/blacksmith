@@ -54,7 +54,7 @@ class DramAnalyzer {
 
   void load_known_functions(int num_ranks);
 
-  /// Determine the number of possible total activations to an aggressor pair within a refresh interval.
+  /// Determine the number of possible activations within a refresh interval.
   size_t count_acts_per_ref();
 };
 
