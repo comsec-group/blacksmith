@@ -12,7 +12,7 @@ struct ProgramArguments {
   // the number of ranks of the DIMM to hammer
   int num_ranks = 0;
   // no. of activations we can do within a refresh interval
-  size_t acts_per_ref = 0;
+  size_t acts_per_trefi = 0;
   // path to JSON file to load
   std::string load_json_filename;
   // the IDs of the patterns to be loaded from a given JSON file
@@ -28,6 +28,7 @@ struct ProgramArguments {
   // these two parameters define the default program mode: do fuzzing and synchronize with REFRESH
   bool do_fuzzing = true;
   bool use_synchronization = true;
+  bool fixed_acts_per_ref = false;
 };
 
 extern ProgramArguments program_args;
