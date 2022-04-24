@@ -55,7 +55,7 @@ class DramAnalyzer {
   void load_known_functions(int num_ranks);
 
   /// Determine the number of possible activations within a refresh interval.
-  size_t count_acts_per_ref();
+  size_t count_acts_per_trefi();
 };
 
 #endif /* DRAMANALYZER */

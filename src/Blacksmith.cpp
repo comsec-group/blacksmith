@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 
   // count the number of possible activations per refresh interval, if not given as program argument
   if (program_args.acts_per_ref==0)
-    program_args.acts_per_ref = dram_analyzer.count_acts_per_ref();
+    program_args.acts_per_ref = dram_analyzer.count_acts_per_trefi();
 
   if (!program_args.load_json_filename.empty()) {
     ReplayingHammerer replayer(memory);

@@ -112,16 +112,20 @@ void DramAnalyzer::load_known_functions(int num_ranks) {
   Logger::log_data(ss.str());
 }
 
-size_t DramAnalyzer::count_acts_per_ref() {
+size_t DramAnalyzer::count_acts_per_trefi() {
   size_t skip_first_N = 50;
+  // pick two random same-bank addresses
   volatile char *a = banks.at(0).at(0);
   volatile char *b = banks.at(0).at(1);
+
   std::vector<uint64_t> acts;
   uint64_t running_sum = 0;
-  uint64_t before, after, count = 0, count_old = 0;
-  (void)*a;
-  (void)*b;
+  uint64_t before;
+  uint64_t after;
+  uint64_t count = 0;
+  uint64_t count_old = 0;
 
+  // computes the standard deviation
   auto compute_std = [](std::vector<uint64_t> &values, uint64_t running_sum, size_t num_numbers) {
     double mean = static_cast<double>(running_sum)/static_cast<double>(num_numbers);
     double var = 0;
@@ -134,17 +138,26 @@ size_t DramAnalyzer::count_acts_per_ref() {
   };
 
   for (size_t i = 0;; i++) {
+    // flush a and b from caches
     clflushopt(a);
     clflushopt(b);
     mfence();
+
+    // get start timestamp and wait until we retrieved it
     before = rdtscp();
     lfence();
+
+    // do DRAM accesses
     (void)*a;
     (void)*b;
+
+    // get end timestamp
     after = rdtscp();
+
     count++;
     if ((after - before) > 1000) {
       if (i > skip_first_N && count_old!=0) {
+        // multiply by 2 to account for both accesses we do (a, b)
         uint64_t value = (count - count_old)*2;
         acts.push_back(value);
         running_sum += value;
