@@ -107,11 +107,9 @@ size_t Memory::check_memory_internal(PatternAddressMapper &mapping,
     return found_bitflips;
   }
 
-  auto check_offset = 5;
-
   auto row_increment = DRAMAddr::get_row_increment();
-  start -= row_increment*check_offset;
-  end += row_increment*check_offset;
+  start -= row_increment;
+  end += row_increment;
 
   auto start_offset = (uint64_t) (start - start_address);
 
