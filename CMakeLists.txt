@@ -185,6 +185,16 @@ target_link_libraries(
         bs
 )
 
+add_executable(
+        checkAddrFunction
+        src/CheckAddrFunction.cpp
+)
+
+target_link_libraries(
+        checkAddrFunction
+        PRIVATE
+        bs
+)
 # === CLEANUP ==================================================================
 
 unset(BLACKSMITH_ENABLE_JSON CACHE)
