@@ -92,7 +92,7 @@ std::vector<uint64_t> DramAnalyzer::get_bank_rank_functions() {
 
 void DramAnalyzer::load_known_functions(int num_ranks) {
   if (num_ranks==1) {
-    bank_rank_functions = std::vector<uint64_t>({0x2040, 0x24000, 0x48000, 0x90000});
+    bank_rank_functions = std::vector<uint64_t>({0x2040, 0x24000, 0x48000, 0x90000}); // TODO refactor?!
     row_function = 0x3ffe0000;
   } else if (num_ranks==2) {
     bank_rank_functions = std::vector<uint64_t>({0x2040, 0x44000, 0x88000, 0x110000, 0x220000});

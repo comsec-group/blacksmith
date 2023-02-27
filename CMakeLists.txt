@@ -69,7 +69,7 @@ add_library(
         src/Memory/Memory.cpp
         src/Utilities/Enums.cpp
         src/Utilities/Logger.cpp
-)
+        src/Utilities/BlacksmithConfig.cpp include/Utilities/BlacksmithConfig.hpp)
 
 target_include_directories(
         bs

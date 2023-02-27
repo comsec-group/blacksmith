@@ -13,6 +13,8 @@ struct ProgramArguments {
   int num_ranks = 0;
   // no. of activations we can do within a refresh interval
   size_t acts_per_ref = 0;
+  // path to JSON config
+  std::string config;
   // path to JSON file to load
   std::string load_json_filename;
   // the IDs of the patterns to be loaded from a given JSON file

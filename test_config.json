@@ -1,0 +1,10 @@
+{
+  "name": "xiao-reverse:msb-rows",
+  "channels": 1,
+  "dimms": 1,
+  "ranks": 2,
+  "total_banks": 32,
+  "row_bits": [18,19,20,21,22,23,24,25,26,28,29],
+  "col_bits": [0,1,2,3,4,5,6,7,8,9,10],
+  "dram_bits": [[7, 13], [14, 18], [16, 20], [17, 21]]
+}

@@ -10,6 +10,7 @@
 
 #include "Forges/TraditionalHammerer.hpp"
 #include "Forges/FuzzyHammerer.hpp"
+#include "Utilities/BlacksmithConfig.hpp"
 
 #include <argagg/argagg.hpp>
 #include <argagg/convert/csv.hpp>
@@ -59,6 +60,16 @@ int main(int argc, char **argv) {
   // prints the current git commit and some program metadata
   Logger::log_metadata(GIT_COMMIT_HASH, program_args.runtime_limit);
 
+  // load config
+  Logger::log_info("loading dram config");
+  BlacksmithConfig config;
+  if (!parse_config(program_args.config, &config)) {
+    Logger::log_error("Failed to parse config");
+    exit(EXIT_FAILURE);
+  } else {
+    Logger::log_info("Config parse success");
+  }
+
   // give this process the highest CPU priority so it can hammer with less interruptions
   int ret = setpriority(PRIO_PROCESS, 0, -20);
   if (ret!=0) Logger::log_error("Instruction setpriority failed.");
@@ -79,7 +90,6 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  Logger::log_info("loading dram config");
   // initialize the DRAMAddr class to load the proper memory configuration
   //luca initialize the global Config variable for memory with the data from the config file we edited
   DRAMAddr::initialize(dram_analyzer.get_bank_rank_functions().size(), memory.get_starting_address());
@@ -140,7 +150,7 @@ void handle_args(int argc, char **argv) {
       {"fuzzing", {"-f", "--fuzzing"}, "perform a fuzzing run (default program mode)", 0},
       {"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1},
       {"replay-patterns", {"-y", "--replay-patterns"}, "replays patterns given as comma-separated list of pattern IDs", 1},
-
+      {"config", {"-c", "--config"}, "loads the specified config file (JSON) as DRAM address config.", 1},
       {"load-json", {"-j", "--load-json"}, "loads the specified JSON file generated in a previous fuzzer run, loads patterns given by --replay-patterns or determines the best ones", 1},
 
       // note that these two parameters don't require a value, their presence already equals a "true"
@@ -182,6 +192,14 @@ void handle_args(int argc, char **argv) {
   } else {
     Logger::log_error("Program argument '--ranks <integer>' is mandatory! Cannot continue.");
     exit(EXIT_FAILURE);
+  }
+
+  if (parsed_args.has_option("config")) {
+      program_args.config = parsed_args["config"].as<std::string>("");
+      Logger::log_debug(format_string("Set --config=%s", program_args.config.c_str()));
+  } else {
+      Logger::log_error("Program argument '--config <string>' is mandatory! Cannot continue.");
+      exit(EXIT_FAILURE);
   }
 
   /**
