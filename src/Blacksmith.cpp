@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <array>
+#include <bitset>
 
 #include "Forges/TraditionalHammerer.hpp"
 #include "Forges/FuzzyHammerer.hpp"
@@ -69,6 +70,8 @@ int main(int argc, char **argv) {
   } else {
     Logger::log_info("Config parse success");
   }
+  MemConfiguration memConfiguration{};
+  to_memconfig(config, &memConfiguration);
 
   // give this process the highest CPU priority so it can hammer with less interruptions
   int ret = setpriority(PRIO_PROCESS, 0, -20);

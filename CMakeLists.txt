@@ -69,7 +69,8 @@ add_library(
         src/Memory/Memory.cpp
         src/Utilities/Enums.cpp
         src/Utilities/Logger.cpp
-        src/Utilities/BlacksmithConfig.cpp include/Utilities/BlacksmithConfig.hpp)
+        src/Utilities/BlacksmithConfig.cpp
+)
 
 target_include_directories(
         bs
@@ -132,6 +133,12 @@ if (BLACKSMITH_ENABLE_JITTING)
             ENABLE_JITTING
     )
 endif ()
+
+target_link_libraries(
+        bs
+        PUBLIC
+        Eigen3::Eigen
+)
 
 # === BLACKSMITH ===============================================================
 

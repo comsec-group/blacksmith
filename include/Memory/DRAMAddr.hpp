@@ -14,7 +14,7 @@
 #define RANKS(x) ((x) << (8UL * 1UL))
 #define BANKS(x) ((x) << (8UL * 0UL))
 
-#define MTX_SIZE (30)
+#define MTX_SIZE (30U)
 
 typedef size_t mem_config_t;
 
@@ -26,8 +26,8 @@ struct MemConfiguration {
   size_t ROW_MASK;
   size_t COL_SHIFT;
   size_t COL_MASK;
-  size_t DRAM_MTX[MTX_SIZE];
-  size_t ADDR_MTX[MTX_SIZE];
+  std::array<size_t, MTX_SIZE> DRAM_MTX;
+  std::array<size_t, MTX_SIZE> ADDR_MTX;
 };
 
 class DRAMAddr {

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <variant>
+#include "Memory/DRAMAddr.hpp"
 
 typedef std::variant<uint64_t, std::vector<uint64_t>> BitDef;
 
@@ -22,5 +23,20 @@ struct BlacksmithConfig {
     std::vector<BitDef> dram_bits;
 };
 
+/**
+ * Parse a config file into a BlacksmithConfig
+ *
+ * @param filepath path to a JSON config file
+ * @param out a pointer to a BlacksmithConfig. `out' will be populated according to the contents of `filepath',
+ * @return true iff deserialization succeeded, false otherwise
+ */
 bool parse_config(const std::string &filepath, BlacksmithConfig *out);
+
+/**
+ * Convert a BlacksmithConfig to a MemConfiguration for use in DRAMAddr.
+ *
+ * @param config a reference to a BlacksmithConfig
+ * @param out a pointer to a MemConfiguration. `out' will be updated with bit definitions from BlacksmithConfig
+ */
+void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out);
 #endif //BLACKSMITH_BLACKSMITHCONFIG_HPP
