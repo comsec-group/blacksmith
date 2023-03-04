@@ -11,8 +11,8 @@ Logger::Logger() = default;
 void Logger::initialize() {
   instance.logfile = std::ofstream();
 
-  //std::string logfile_filename = "stdout.log";
-  std::string logfile_filename = "/dev/stdout";
+  std::string logfile_filename = "stdout.log";
+  //std::string logfile_filename = "/dev/stdout";
   std::cout << "Writing into logfile " FF_BOLD << logfile_filename << F_RESET << std::endl;
   // we need to open the log file in append mode because the run_benchmark script writes values into it
   instance.logfile.open(logfile_filename, std::ios::out | std::ios::app);
