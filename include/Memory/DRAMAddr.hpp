@@ -33,7 +33,6 @@ struct MemConfiguration {
 class DRAMAddr {
  private:
   // Class attributes
-  static std::map<size_t, MemConfiguration> Configs;
   static MemConfiguration MemConfig;
   static size_t base_msb;
 
@@ -47,7 +46,7 @@ class DRAMAddr {
   // class methods
   static void set_base_msb(void *buff);
 
-  static void load_mem_config(mem_config_t cfg);
+  static void set_mem_config(const MemConfiguration &memConfiguration);
 
   // instance methods
   DRAMAddr(size_t bk, size_t r, size_t c);
@@ -61,7 +60,7 @@ class DRAMAddr {
 
   [[gnu::unused]] std::string to_string();
 
-  static void initialize(uint64_t num_bank_rank_functions, volatile char *start_address);
+  static void initialize(volatile char *start_address);
 
   [[nodiscard]] std::string to_string_compact() const;
 

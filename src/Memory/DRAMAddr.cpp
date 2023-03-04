@@ -1,22 +1,8 @@
 #include "Memory/DRAMAddr.hpp"
 #include "GlobalDefines.hpp"
 
-// initialize static variable
-std::map<size_t, MemConfiguration> DRAMAddr::Configs;
 
-void DRAMAddr::initialize(uint64_t num_bank_rank_functions, volatile char *start_address) {
-  // TODO: This is a shortcut to check if it's a single rank dimm or dual rank in order to load the right memory
-  //  configuration. We should get these infos from dmidecode to do it properly, but for now this is easier.
-  size_t num_ranks;
-  if (num_bank_rank_functions==5) {
-    num_ranks = RANKS(2);
-  } else if (num_bank_rank_functions==4) {
-    num_ranks = RANKS(1);
-  } else {
-    Logger::log_error("Could not initialize DRAMAddr as #ranks seems not to be 1 or 2.");
-    exit(1);
-  }
-  DRAMAddr::load_mem_config((CHANS(CHANNEL) | DIMMS(DIMM) | num_ranks | BANKS(NUM_BANKS)));
+void DRAMAddr::initialize(volatile char *start_address) {
   DRAMAddr::set_base_msb((void *) start_address);
 }
 
@@ -24,12 +10,8 @@ void DRAMAddr::set_base_msb(void *buff) {
   base_msb = (size_t) buff & (~((size_t) (1ULL << 30UL) - 1UL));  // get higher order bits above the super page
 }
 
-// TODO we can create a DRAMconfig class to load the right matrix depending on
-// the configuration. You could also test it by checking if you can trigger bank conflcits
-//luca: this initializes the Global Configs variable
-void DRAMAddr::load_mem_config(mem_config_t cfg) {
-  DRAMAddr::initialize_configs();
-  MemConfig = Configs[cfg];
+void DRAMAddr::set_mem_config(const MemConfiguration &memConfiguration) {
+  MemConfig = memConfiguration;
 }
 
 DRAMAddr::DRAMAddr() = default;
@@ -107,6 +89,7 @@ size_t DRAMAddr::base_msb;
 #ifdef ENABLE_JSON
 
 nlohmann::json DRAMAddr::get_memcfg_json() {
+  // TODO adapt
   std::map<size_t, nlohmann::json> memcfg_to_json = {
       {(CHANS(1UL) | DIMMS(1UL) | RANKS(1UL) | BANKS(16UL)),
        nlohmann::json{
@@ -125,84 +108,6 @@ nlohmann::json DRAMAddr::get_memcfg_json() {
 }
 
 #endif
-void DRAMAddr::initialize_configs() {
-  struct MemConfiguration dram_cfg = {
-      .IDENTIFIER = (CHANS(1UL) | DIMMS(1UL) | RANKS(2UL) | BANKS(32UL)),
-      .BK_SHIFT = 25,
-      .BK_MASK = (0b000000000000000000000000011111),
-      .ROW_SHIFT = 0,
-      .ROW_MASK = (0b000000000000000000111111111111),
-      .COL_SHIFT = 12,
-      .COL_MASK = (0b000000000000000001111111111111),
-      .DRAM_MTX = {          
-          0b000000000000000010000001000000,
-          0b000000000001000100000000000000,
-          0b000000000010001000000000000000,
-          0b000000000100010000000000000000,
-          0b000000001000100000000000000000,
-          0b000000000000000001000000000000,
-          0b000000000000000000100000000000,
-          0b000000000000000000010000000000,
-          0b000000000000000000001000000000,
-          0b000000000000000000000100000000,
-          0b000000000000000000000010000000,
-          0b000000000000000000000001000000,
-          0b000000000000000000000000100000,
-          0b000000000000000000000000010000,
-          0b000000000000000000000000001000,
-          0b000000000000000000000000000100,
-          0b000000000000000000000000000010,
-          0b000000000000000000000000000001,
-          0b100000000000000000000000000000,
-          0b010000000000000000000000000000,
-          0b001000000000000000000000000000,
-          0b000100000000000000000000000000,
-          0b000010000000000000000000000000,
-          0b000001000000000000000000000000,
-          0b000000100000000000000000000000,
-          0b000000010000000000000000000000,
-          0b000000001000000000000000000000,
-          0b000000000100000000000000000000,
-          0b000000000010000000000000000000,
-          0b000000000001000000000000000000
-       },
-      .ADDR_MTX = {          
-          0b000000000000000000100000000000,
-          0b000000000000000000010000000000,
-          0b000000000000000000001000000000,
-          0b000000000000000000000100000000,
-          0b000000000000000000000010000000,
-          0b000000000000000000000001000000,
-          0b000000000000000000000000100000,
-          0b000000000000000000000000010000,
-          0b000000000000000000000000001000,
-          0b000000000000000000000000000100,
-          0b000000000000000000000000000010,
-          0b000000000000000000000000000001,
-          0b000010000000000000000000001000,
-          0b000100000000000000000000000100,
-          0b001000000000000000000000000010,
-          0b010000000000000000000000000001,
-          0b100000000001000000000000000000,
-          0b000001000000000000000000000000,
-          0b000000100000000000000000000000,
-          0b000000010000000000000000000000,
-          0b000000001000000000000000000000,
-          0b000000000100000000000000000000,
-          0b000000000010000000000000000000,
-          0b000000000001000000000000000000,
-          0b000000000000100000000000000000,
-          0b000000000000010000000000000000,
-          0b000000000000001000000000000000,
-          0b000000000000000100000000000000,
-          0b000000000000000010000000000000,
-          0b000000000000000001000000000000
-       }
-  };
-  DRAMAddr::Configs = {
-       {(CHANS(1UL) | DIMMS(1UL) | RANKS(2UL) | BANKS(32UL)), dram_cfg}
- };
-}
 
 uint64_t DRAMAddr::get_row_increment() {
   return MemConfig.DRAM_MTX[1];

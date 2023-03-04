@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
   }
   MemConfiguration memConfiguration{};
   to_memconfig(config, &memConfiguration);
+  DRAMAddr::set_mem_config(memConfiguration);
 
   // give this process the highest CPU priority so it can hammer with less interruptions
   int ret = setpriority(PRIO_PROCESS, 0, -20);
@@ -95,7 +96,7 @@ int main(int argc, char **argv) {
 
   // initialize the DRAMAddr class to load the proper memory configuration
   //luca initialize the global Config variable for memory with the data from the config file we edited
-  DRAMAddr::initialize(dram_analyzer.get_bank_rank_functions().size(), memory.get_starting_address());
+  DRAMAddr::initialize(memory.get_starting_address());
 
   // count the number of possible activations per refresh interval, if not given as program argument
   if (program_args.acts_per_ref==0)
