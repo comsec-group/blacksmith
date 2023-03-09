@@ -20,7 +20,7 @@ struct BlacksmithConfig {
     uint64_t total_banks;
     std::vector<BitDef> row_bits;
     std::vector<BitDef> col_bits;
-    std::vector<BitDef> dram_bits;
+    std::vector<BitDef> bank_bits;
 };
 
 /**

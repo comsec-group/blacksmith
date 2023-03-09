@@ -37,7 +37,7 @@ struct nlohmann::adl_serializer<std::variant<Ts...>> {
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
-                                   total_banks, row_bits, col_bits, dram_bits)
+                                   total_banks, row_bits, col_bits, bank_bits)
 
 // helper type for std::visit
 template<class... Ts>
@@ -81,13 +81,13 @@ void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out) {
   out->IDENTIFIER = (CHANS(config.channels) | DIMMS(config.dimms) | RANKS(config.ranks) | BANKS(config.total_banks));
   size_t i = 0;
 
-  assert(MTX_SIZE == config.dram_bits.size() + config.col_bits.size() + config.row_bits.size());
+  assert(MTX_SIZE == config.bank_bits.size() + config.col_bits.size() + config.row_bits.size());
 
-  out->BK_SHIFT = MTX_SIZE - config.dram_bits.size();
-  out->BK_MASK = (1 << (config.dram_bits.size())) - 1;
-  out->COL_SHIFT = MTX_SIZE - config.dram_bits.size() - config.col_bits.size();
+  out->BK_SHIFT = MTX_SIZE - config.bank_bits.size();
+  out->BK_MASK = (1 << (config.bank_bits.size())) - 1;
+  out->COL_SHIFT = MTX_SIZE - config.bank_bits.size() - config.col_bits.size();
   out->COL_MASK = (1 << (config.col_bits.size())) - 1;
-  out->ROW_SHIFT = MTX_SIZE - config.dram_bits.size() - config.col_bits.size() - config.row_bits.size();
+  out->ROW_SHIFT = MTX_SIZE - config.bank_bits.size() - config.col_bits.size() - config.row_bits.size();
   out->ROW_MASK = (1 << (config.row_bits.size())) - 1;
 
   // construct dram matrix
@@ -96,7 +96,7 @@ void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out) {
     dramMtx[i++] = bitdef_to_bitstr(def);
   };
   // bank
-  std::for_each(config.dram_bits.begin(), config.dram_bits.end(), updateDramMtx);
+  std::for_each(config.bank_bits.begin(), config.bank_bits.end(), updateDramMtx);
   // col
   std::for_each(config.col_bits.begin(), config.col_bits.end(), updateDramMtx);
   // row
