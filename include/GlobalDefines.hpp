@@ -60,10 +60,5 @@ uint64_t static inline GB(uint64_t value) {
 //but i am not 100% sure. Make sure this is in sync with the supplied DRAM config
 #define NUM_BANKS 32
 
-// number of active DIMMs in the system
-#define DIMM 1
-
-// number of active channels in the system
-#define CHANNEL 1
 
 #endif /* GLOBAL_DEFINES */

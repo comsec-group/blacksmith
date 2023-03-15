@@ -141,8 +141,8 @@ void Logger::log_global_defines() {
      << "NUM_TARGETS: " << NUM_TARGETS << "\n"
      << "MAX_ROWS: " << MAX_ROWS << "\n"
      << "NUM_BANKS: " << NUM_BANKS << "\n"
-     << "DIMM: " << DIMM << "\n"
-     << "CHANNEL: " << CHANNEL << "\n"
+     //<< "DIMM: " << DIMM << "\n"
+     //<< "CHANNEL: " << CHANNEL << "\n"
      //<< "MEM_SIZE: " << MEM_SIZE << "\n" // TODO log config?
      << "PAGE_SIZE: " << getpagesize() << std::endl;
   Logger::log_data(ss.str());
