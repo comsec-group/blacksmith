@@ -9,8 +9,8 @@ void DramAnalyzer::find_bank_conflicts() {
   while (nr_banks_cur < NUM_BANKS && remaining_tries > 0) {
     reset:
     remaining_tries--;
-    auto a1 = start_address + (dist(gen)%(MEM_SIZE/64))*64;
-    auto a2 = start_address + (dist(gen)%(MEM_SIZE/64))*64;
+    auto a1 = start_address + (dist(gen)%(config.memory_size/64))*64;
+    auto a2 = start_address + (dist(gen)%(config.memory_size/64))*64;
     auto ret1 = measure_time(a1, a2);
     auto ret2 = measure_time(a1, a2);
 
@@ -62,7 +62,7 @@ void DramAnalyzer::find_targets(std::vector<volatile char *> &target_bank) {
   target_bank.clear();
   size_t num_repetitions = 5;
   while (tmp.size() < 10) {
-    auto a1 = start_address + (dist(gen)%(MEM_SIZE/64))*64;
+    auto a1 = start_address + (dist(gen)%(config.memory_size/64))*64;
     if (tmp.count(a1) > 0) continue;
     uint64_t cumulative_times = 0;
     for (size_t i = 0; i < num_repetitions; i++) {
@@ -78,8 +78,8 @@ void DramAnalyzer::find_targets(std::vector<volatile char *> &target_bank) {
   }
 }
 
-DramAnalyzer::DramAnalyzer(volatile char *target) :
-  row_function(0), start_address(target) {
+DramAnalyzer::DramAnalyzer(volatile char *target, BlacksmithConfig &config) :
+  config(config), row_function(0), start_address(target) {
   std::random_device rd;
   gen = std::mt19937(rd());
   dist = std::uniform_int_distribution<>(0, std::numeric_limits<int>::max());

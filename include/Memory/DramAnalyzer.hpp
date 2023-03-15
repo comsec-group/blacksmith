@@ -6,12 +6,15 @@
 #include <random>
 
 #include "Utilities/AsmPrimitives.hpp"
+#include "Utilities/BlacksmithConfig.hpp"
 
 class DramAnalyzer {
  private:
   std::vector<std::vector<volatile char *>> banks;
 
   std::vector<uint64_t> bank_rank_functions;
+
+  BlacksmithConfig &config;
 
   uint64_t row_function;
 
@@ -24,7 +27,7 @@ class DramAnalyzer {
   std::uniform_int_distribution<int> dist;
 
  public:
-  explicit DramAnalyzer(volatile char *target);
+  explicit DramAnalyzer(volatile char *target, BlacksmithConfig &config);
 
   /// Finds addresses of the same bank causing bank conflicts when accessed sequentially
   void find_bank_conflicts();

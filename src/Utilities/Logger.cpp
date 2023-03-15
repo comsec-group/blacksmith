@@ -143,7 +143,7 @@ void Logger::log_global_defines() {
      << "NUM_BANKS: " << NUM_BANKS << "\n"
      << "DIMM: " << DIMM << "\n"
      << "CHANNEL: " << CHANNEL << "\n"
-     << "MEM_SIZE: " << MEM_SIZE << "\n"
+     //<< "MEM_SIZE: " << MEM_SIZE << "\n" // TODO log config?
      << "PAGE_SIZE: " << getpagesize() << std::endl;
   Logger::log_data(ss.str());
 }

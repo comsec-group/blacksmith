@@ -37,7 +37,7 @@ struct nlohmann::adl_serializer<std::variant<Ts...>> {
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
-                                   total_banks, row_bits, col_bits, bank_bits)
+                                   total_banks, memory_size, row_bits, col_bits, bank_bits)
 
 // helper type for std::visit
 template<class... Ts>

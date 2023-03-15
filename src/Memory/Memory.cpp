@@ -3,7 +3,7 @@
 #include <sys/mman.h>
 
 /// Allocates a MEM_SIZE bytes of memory by using super or huge pages.
-void Memory::allocate_memory(size_t mem_size) {
+void Memory::allocate_memory(uint64_t mem_size) {
   this->size = mem_size;
   volatile char *target = nullptr;
   FILE *fp;
@@ -16,7 +16,7 @@ void Memory::allocate_memory(size_t mem_size) {
       Logger::log_data(std::strerror(errno));
       exit(EXIT_FAILURE);
     }
-    auto mapped_target = mmap((void *) start_address, MEM_SIZE, PROT_READ | PROT_WRITE,
+    auto mapped_target = mmap((void *) start_address, mem_size, PROT_READ | PROT_WRITE,
         MAP_SHARED | MAP_ANONYMOUS | MAP_HUGETLB | (30UL << MAP_HUGE_SHIFT), fileno(fp), 0);
     if (mapped_target==MAP_FAILED) {
       perror("mmap");
@@ -25,9 +25,9 @@ void Memory::allocate_memory(size_t mem_size) {
     target = (volatile char*) mapped_target;
   } else {
     // allocate memory using huge pages
-    assert(posix_memalign((void **) &target, MEM_SIZE, MEM_SIZE)==0);
-    assert(madvise((void *) target, MEM_SIZE, MADV_HUGEPAGE)==0);
-    memset((char *) target, 'A', MEM_SIZE);
+    assert(posix_memalign((void **) &target, mem_size, mem_size)==0);
+    assert(madvise((void *) target, mem_size, MADV_HUGEPAGE)==0);
+    memset((char *) target, 'A', mem_size);
     // for khugepaged
     Logger::log_info("Waiting for khugepaged.");
     sleep(10);

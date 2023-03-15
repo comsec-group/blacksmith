@@ -81,11 +81,11 @@ int main(int argc, char **argv) {
   // allocate a large bulk of contiguous memory
   Logger::log_info("allocating memory...");
   Memory memory(true);
-  memory.allocate_memory(MEM_SIZE);
+  memory.allocate_memory(config.memory_size);
 
   // find address sets that create bank conflicts
   Logger::log_info("finding bank conflicts...");
-  DramAnalyzer dram_analyzer(memory.get_starting_address());
+  DramAnalyzer dram_analyzer(memory.get_starting_address(), config);
   dram_analyzer.find_bank_conflicts();
   if (program_args.num_ranks != 0) {
     dram_analyzer.load_known_functions(program_args.num_ranks);

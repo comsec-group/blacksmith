@@ -39,7 +39,7 @@ class Memory {
 
   ~Memory();
 
-  void allocate_memory(size_t mem_size);
+  void allocate_memory(uint64_t mem_size);
 
   void initialize(DATA_PATTERN data_pattern);
 

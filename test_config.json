@@ -2,6 +2,7 @@
   "name": "xiao-reverse:msb-rows",
   "channels": 1,
   "dimms": 1,
+  "memory_size": 1073741824, "__comment": "(in bytes)",
   "ranks": 2,
   "total_banks": 32,
   "row_bits": [29,28,27,26,25,24,23,22,21,20,19,18],

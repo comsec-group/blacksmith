@@ -66,7 +66,4 @@ uint64_t static inline GB(uint64_t value) {
 // number of active channels in the system
 #define CHANNEL 1
 
-// number of bytes to be allocated
-#define MEM_SIZE (GB(1))
-
 #endif /* GLOBAL_DEFINES */

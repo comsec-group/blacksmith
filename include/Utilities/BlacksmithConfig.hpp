@@ -18,6 +18,7 @@ struct BlacksmithConfig {
     uint64_t dimms;
     uint64_t ranks;
     uint64_t total_banks;
+    uint64_t memory_size;
     std::vector<BitDef> row_bits;
     std::vector<BitDef> col_bits;
     std::vector<BitDef> bank_bits;
