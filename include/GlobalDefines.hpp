@@ -55,10 +55,5 @@ uint64_t static inline GB(uint64_t value) {
 // maximum number of aggressor rows
 #define MAX_ROWS 30
 
-// number of banks in the system. luca: we search for NUM_BANKS sets/pools of conflicting addrs in 
-//void DramAnalyzer::find_bank_conflicts. Thus this should be RANK*BANK e.g. number of sets e.g. 32 if we have 2 Ranks with 16 banks
-//but i am not 100% sure. Make sure this is in sync with the supplied DRAM config
-#define NUM_BANKS 32
-
 
 #endif /* GLOBAL_DEFINES */

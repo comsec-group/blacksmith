@@ -140,7 +140,7 @@ void Logger::log_global_defines() {
      << "THRESH: " << THRESH << "\n"
      << "NUM_TARGETS: " << NUM_TARGETS << "\n"
      << "MAX_ROWS: " << MAX_ROWS << "\n"
-     << "NUM_BANKS: " << NUM_BANKS << "\n"
+     //<< "NUM_BANKS: " << NUM_BANKS << "\n"
      //<< "DIMM: " << DIMM << "\n"
      //<< "CHANNEL: " << CHANNEL << "\n"
      //<< "MEM_SIZE: " << MEM_SIZE << "\n" // TODO log config?

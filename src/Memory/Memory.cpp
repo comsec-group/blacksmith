@@ -88,7 +88,7 @@ size_t Memory::check_memory(PatternAddressMapper &mapping, bool reproducibility_
 size_t Memory::check_memory(const volatile char *start, const volatile char *end) {
   flipped_bits.clear();
   // create a "fake" pattern mapping to keep this method for backward compatibility
-  PatternAddressMapper pattern_mapping;
+  PatternAddressMapper pattern_mapping(config.total_banks);
   return check_memory_internal(pattern_mapping, start, end, false, true);
 }
 
@@ -205,7 +205,7 @@ size_t Memory::check_memory_internal(PatternAddressMapper &mapping,
   return found_bitflips;
 }
 
-Memory::Memory(bool use_superpage) : size(0), superpage(use_superpage) {
+Memory::Memory(bool use_superpage, BlacksmithConfig &config) : config(config), size(0), superpage(use_superpage) {
 }
 
 Memory::~Memory() {

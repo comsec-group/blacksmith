@@ -5,8 +5,8 @@
 
 void DramAnalyzer::find_bank_conflicts() {
   size_t nr_banks_cur = 0;
-  int remaining_tries = NUM_BANKS*256;  // experimentally determined, may be unprecise
-  while (nr_banks_cur < NUM_BANKS && remaining_tries > 0) {
+  uint64_t remaining_tries = config.total_banks*256;  // experimentally determined, may be unprecise
+  while (nr_banks_cur < config.total_banks && remaining_tries > 0) {
     reset:
     remaining_tries--;
     auto a1 = start_address + (dist(gen)%(config.memory_size/64))*64;
@@ -16,7 +16,7 @@ void DramAnalyzer::find_bank_conflicts() {
 
     if ((ret1 > THRESH) && (ret2 > THRESH)) {
       bool all_banks_set = true;
-      for (size_t i = 0; i < NUM_BANKS; i++) {
+      for (size_t i = 0; i < config.total_banks; i++) {
         if (banks.at(i).empty()) {
           all_banks_set = false;
         } else {
@@ -43,7 +43,7 @@ void DramAnalyzer::find_bank_conflicts() {
     if (remaining_tries==0) {
       Logger::log_error(format_string(
           "Could not find conflicting address sets. Is the number of banks (%d) defined correctly?",
-          (int) NUM_BANKS));
+          (int) config.total_banks));
       exit(1);
     }
   }
@@ -83,7 +83,7 @@ DramAnalyzer::DramAnalyzer(volatile char *target, BlacksmithConfig &config) :
   std::random_device rd;
   gen = std::mt19937(rd());
   dist = std::uniform_int_distribution<>(0, std::numeric_limits<int>::max());
-  banks = std::vector<std::vector<volatile char *>>(NUM_BANKS, std::vector<volatile char *>());
+  banks = std::vector<std::vector<volatile char *>>(config.total_banks, std::vector<volatile char *>());
 }
 
 std::vector<uint64_t> DramAnalyzer::get_bank_rank_functions() {

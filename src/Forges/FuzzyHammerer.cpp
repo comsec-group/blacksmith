@@ -6,15 +6,17 @@
 #include "Fuzzer/PatternBuilder.hpp"
 #include "Forges/ReplayingHammerer.hpp"
 
+FuzzyHammerer::FuzzyHammerer(BlacksmithConfig &config): config(config) {}
+
 // initialize the static variables
 size_t FuzzyHammerer::cnt_pattern_probes = 0UL;
 size_t FuzzyHammerer::cnt_generated_patterns = 0UL;
 std::unordered_map<std::string, std::unordered_map<std::string, int>> FuzzyHammerer::map_pattern_mappings_bitflips;
 HammeringPattern FuzzyHammerer::hammering_pattern = HammeringPattern(); /* NOLINT */
 
-void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer, Memory &memory, int acts,
-                                                      unsigned long runtime_limit, const size_t probes_per_pattern,
-                                                      bool sweep_best_pattern) {
+void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer, Memory &memory, BlacksmithConfig &config,
+                                                      int acts, unsigned long runtime_limit,
+                                                      const size_t probes_per_pattern, bool sweep_best_pattern) {
   std::mt19937 gen = std::mt19937(std::random_device()());
 
   Logger::log_info(
@@ -36,7 +38,7 @@ void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer
   std::vector<HammeringPattern> effective_patterns;
 
   HammeringPattern best_hammering_pattern;
-  PatternAddressMapper best_mapping;
+  PatternAddressMapper best_mapping(config.total_banks);
 
   size_t best_mapping_bitflips = 0;
   size_t best_hammering_pattern_bitflips = 0;
@@ -66,7 +68,7 @@ void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer
     // then test this pattern with N different mappings (i.e., address sets)
     size_t sum_flips_one_pattern_all_mappings = 0;
     for (cnt_pattern_probes = 0; cnt_pattern_probes < probes_per_pattern; ++cnt_pattern_probes) {
-      PatternAddressMapper mapper;
+      PatternAddressMapper mapper(config.total_banks);
 //      Logger::log_info(format_string("Running pattern #%lu (%s) for address set %d (%s).",
 //          current_round, hammering_pattern.instance_id.c_str(), cnt_pattern_probes, mapper.get_instance_id().c_str()));
 //
@@ -153,7 +155,7 @@ void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer
 
   // define the location where we are going to do the large sweep
   DRAMAddr sweep_start = DRAMAddr(
-      Range<int>(0, NUM_BANKS-1).get_random_number(gen),
+      Range<int>(0, config.total_banks-1).get_random_number(gen),
       Range<int>(0, 4095).get_random_number(gen),
       0);
 
@@ -368,7 +370,8 @@ void FuzzyHammerer::log_overall_statistics(size_t cur_round, const std::string &
   Logger::log_data(format_string("Best pattern #bitflips: %ld", best_mapping_num_bitflips));
 }
 
-void FuzzyHammerer::generate_pattern_for_ARM(int acts,
+void FuzzyHammerer::generate_pattern_for_ARM(BlacksmithConfig &config,
+                                             int acts,
                                              int *rows_to_access,
                                              int max_accesses,
                                              const size_t probes_per_pattern) {
@@ -391,7 +394,7 @@ void FuzzyHammerer::generate_pattern_for_ARM(int acts,
   Logger::log_data(hammering_pattern.get_agg_access_pairs_text_repr());
 
   // choose random addresses for pattern
-  PatternAddressMapper mapper;
+  PatternAddressMapper mapper(config.total_banks);
   mapper.randomize_addresses(fuzzing_params, hammering_pattern.agg_access_patterns, true);
   mapper.export_pattern(hammering_pattern.aggressors, hammering_pattern.base_period, rows_to_access, max_accesses);
   Logger::log_info("Aggressor ID to DRAM address mapping (bank, rank, column):");

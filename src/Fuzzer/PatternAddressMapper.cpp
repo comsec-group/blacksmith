@@ -8,8 +8,10 @@
 // initialize the bank_counter (static var)
 int PatternAddressMapper::bank_counter = 0;
 
-PatternAddressMapper::PatternAddressMapper()
-    : instance_id(uuid::gen_uuid()) { /* NOLINT */
+PatternAddressMapper::PatternAddressMapper() {}
+
+PatternAddressMapper::PatternAddressMapper(uint64_t total_banks)
+    : instance_id(uuid::gen_uuid()), total_banks(total_banks) { /* NOLINT */
   code_jitter = std::make_unique<CodeJitter>();
 
   // standard mersenne_twister_engine seeded with rd()
@@ -26,7 +28,7 @@ void PatternAddressMapper::randomize_addresses(FuzzingParameterSet &fuzzing_para
   // retrieve and then store randomized values as they should be the same for all added addresses
   // (store bank_no as field for get_random_nonaccessed_rows)
   bank_no = PatternAddressMapper::bank_counter;
-  PatternAddressMapper::bank_counter = (PatternAddressMapper::bank_counter + 1) % NUM_BANKS;
+  PatternAddressMapper::bank_counter = (PatternAddressMapper::bank_counter + 1) % total_banks;
   const bool use_seq_addresses = fuzzing_params.get_random_use_seq_addresses();
   const int start_row = fuzzing_params.get_random_start_row();
   if (verbose) FuzzingParameterSet::print_dynamic_parameters(bank_no, use_seq_addresses, start_row);
@@ -288,6 +290,7 @@ void from_json(const nlohmann::json &j, PatternAddressMapper &p) {
   j.at("max_row").get_to(p.max_row);
   j.at("bank_no").get_to(p.bank_no);
   j.at("reproducibility_score").get_to(p.reproducibility_score);
+  j.at("total_banks").get_to(p.total_banks);
   p.code_jitter = std::make_unique<CodeJitter>();
   j.at("code_jitter").get_to(*p.code_jitter);
 }
@@ -354,7 +357,8 @@ PatternAddressMapper::PatternAddressMapper(const PatternAddressMapper &other)
       bank_no(other.bank_no),
       aggressor_to_addr(other.aggressor_to_addr),
       bit_flips(other.bit_flips),
-      reproducibility_score(other.reproducibility_score) {
+      reproducibility_score(other.reproducibility_score),
+      total_banks(other.total_banks) {
   code_jitter = std::make_unique<CodeJitter>();
   code_jitter->num_aggs_for_sync = other.get_code_jitter().num_aggs_for_sync;
   code_jitter->total_activations = other.get_code_jitter().total_activations;

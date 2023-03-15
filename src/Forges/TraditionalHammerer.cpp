@@ -313,7 +313,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
   }
 }
 
-void TraditionalHammerer::n_sided_hammer_experiment_frequencies(Memory &memory) {
+void TraditionalHammerer::n_sided_hammer_experiment_frequencies(Memory &memory, BlacksmithConfig &config) {
 #ifdef ENABLE_JSON
   nlohmann::json root;
   nlohmann::json all_results = nlohmann::json::array();
@@ -375,7 +375,7 @@ for (size_t r = 0; r < 10; ++ r) {
 
   // randomly choose two aggressors
   auto agg1 = DRAMAddr(
-      Range<size_t>(0, NUM_BANKS-1).get_random_number(gen),
+      Range<size_t>(0, config.total_banks-1).get_random_number(gen),
       Range<size_t>(0, MAX_ROW-1).get_random_number(gen),
       0);
   auto agg2 = DRAMAddr(agg1.bank, agg1.row + 2, 0);
@@ -420,7 +420,7 @@ for (size_t r = 0; r < 10; ++ r) {
     for (size_t drd = 0; drd < dummy_rounds; ++drd) {
 //      aggressors.push_back((volatile char *) dmy1.to_virt());
 //      aggressors.push_back((volatile char *) dmy2.to_virt());
-      auto dmy = DRAMAddr(Range<size_t>(0, NUM_BANKS - 1).get_random_number(gen),
+      auto dmy = DRAMAddr(Range<size_t>(0, config.total_banks - 1).get_random_number(gen),
           Range<size_t>(0, MAX_ROW - 1).get_random_number(gen),
           0);
       aggressors.push_back((volatile char *) dmy.to_virt());

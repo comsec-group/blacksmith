@@ -16,7 +16,7 @@ class TraditionalHammerer {
   // run experiment where we systematically try out all possible offsets
   [[maybe_unused]] static void n_sided_hammer_experiment(Memory &memory, int acts);
 
-  static void n_sided_hammer_experiment_frequencies(Memory &memory);
+  static void n_sided_hammer_experiment_frequencies(Memory &memory, BlacksmithConfig &config);
 
   static void hammer(std::vector<volatile char *> &aggressors, size_t hammer_rounds);
 

@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 
   // allocate a large bulk of contiguous memory
   Logger::log_info("allocating memory...");
-  Memory memory(true);
+  Memory memory(true, config);
   memory.allocate_memory(config.memory_size);
 
   // find address sets that create bank conflicts
@@ -112,12 +112,12 @@ int main(int argc, char **argv) {
       replayer.replay_patterns(program_args.load_json_filename, program_args.pattern_ids);
     }
   } else if (program_args.do_fuzzing && program_args.use_synchronization) {
-    FuzzyHammerer::n_sided_frequency_based_hammering(dram_analyzer, memory, static_cast<int>(program_args.acts_per_ref), program_args.runtime_limit,
+    FuzzyHammerer::n_sided_frequency_based_hammering(dram_analyzer, memory, config, static_cast<int>(program_args.acts_per_ref), program_args.runtime_limit,
         program_args.num_address_mappings_per_pattern, program_args.sweeping);
   } else if (!program_args.do_fuzzing) {
 //    TraditionalHammerer::n_sided_hammer(memory, program_args.acts_per_ref, program_args.runtime_limit);
 //    TraditionalHammerer::n_sided_hammer_experiment(memory, program_args.acts_per_ref);
-    TraditionalHammerer::n_sided_hammer_experiment_frequencies(memory);
+    TraditionalHammerer::n_sided_hammer_experiment_frequencies(memory, config);
   } else {
     Logger::log_error("Invalid combination of program control-flow arguments given. "
                       "Note: Fuzzing is only supported with synchronized hammering.");
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
   return EXIT_SUCCESS;
 }
 
-void handle_arg_generate_patterns(int num_activations, const size_t probes_per_pattern) {
+void handle_arg_generate_patterns(BlacksmithConfig &config, int num_activations, const size_t probes_per_pattern) {
   // this parameter is defined in FuzzingParameterSet
   const size_t MAX_NUM_REFRESH_INTERVALS = 32;
   const size_t MAX_ACCESSES = num_activations*MAX_NUM_REFRESH_INTERVALS;
@@ -136,7 +136,7 @@ void handle_arg_generate_patterns(int num_activations, const size_t probes_per_p
     Logger::log_error("Allocation of rows_to_access failed!");
     exit(EXIT_FAILURE);
   }
-  FuzzyHammerer::generate_pattern_for_ARM(num_activations, static_cast<int *>(rows_to_access), static_cast<int>(MAX_ACCESSES), probes_per_pattern);
+  FuzzyHammerer::generate_pattern_for_ARM(config, num_activations, static_cast<int *>(rows_to_access), static_cast<int>(MAX_ACCESSES), probes_per_pattern);
   exit(EXIT_SUCCESS);
 }
 
@@ -152,7 +152,7 @@ void handle_args(int argc, char **argv) {
       {"ranks", {"-r", "--ranks"}, "number of ranks on the DIMM, used to determine bank/rank/row functions, assumes Intel Coffe Lake CPU (default: None)", 1},
 
       {"fuzzing", {"-f", "--fuzzing"}, "perform a fuzzing run (default program mode)", 0},
-      {"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1},
+      //{"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1}, TODO add arg again after refactor
       {"replay-patterns", {"-y", "--replay-patterns"}, "replays patterns given as comma-separated list of pattern IDs", 1},
       {"config", {"-c", "--config"}, "loads the specified config file (JSON) as DRAM address config.", 1},
       {"load-json", {"-j", "--load-json"}, "loads the specified JSON file generated in a previous fuzzer run, loads patterns given by --replay-patterns or determines the best ones", 1},
@@ -225,10 +225,13 @@ void handle_args(int argc, char **argv) {
    * program modes
    */
   if (parsed_args.has_option("generate-patterns")) {
+    // TODO refactor program modes
+#if 0
     auto num_activations = parsed_args["generate-patterns"].as<int>(84);
     // this must happen AFTER probes-per-pattern has been parsed
     // note: the following method call does not return anymore
     handle_arg_generate_patterns(num_activations, program_args.num_address_mappings_per_pattern);
+#endif
   } else if (parsed_args.has_option("load-json")) {
     program_args.load_json_filename = parsed_args["load-json"].as<std::string>("");
     if (parsed_args.has_option("replay-patterns")) {

@@ -15,6 +15,7 @@
 #include "Fuzzer/BitFlip.hpp"
 #include "Fuzzer/FuzzingParameterSet.hpp"
 #include "Fuzzer/CodeJitter.hpp"
+#include "Utilities/BlacksmithConfig.hpp"
 
 class PatternAddressMapper {
  private:
@@ -35,6 +36,8 @@ class PatternAddressMapper {
   std::unique_ptr<CodeJitter> code_jitter;
 
   PatternAddressMapper();
+
+  explicit PatternAddressMapper(uint64_t total_banks);
 
   // copy constructor
   PatternAddressMapper(const PatternAddressMapper& other);
@@ -62,6 +65,8 @@ class PatternAddressMapper {
   //    1   => 100%: was reproducible in all reproducibility runs executed,
   //    0.4 => 40%: was reproducible in 40% of all reproducibility runs executed
   int reproducibility_score = -1;
+
+  uint64_t total_banks;
 
   // chooses new addresses for the aggressors involved in its referenced HammeringPattern
   void randomize_addresses(FuzzingParameterSet &fuzzing_params,
