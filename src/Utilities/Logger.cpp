@@ -134,7 +134,7 @@ void Logger::log_metadata(const char *commit_hash, unsigned long run_time_limit_
 void Logger::log_global_defines() {
   Logger::log_info("Printing run configuration (GlobalDefines.hpp):");
   std::stringstream ss;
-  ss << "DRAMA_ROUNDS: " << DRAMA_ROUNDS << "\n"
+  ss //<< "DRAMA_ROUNDS: " << DRAMA_ROUNDS << "\n"
      //<< "CACHELINE_SIZE: " << CACHELINE_SIZE << "\n"
      //<< "HAMMER_ROUNDS: " << HAMMER_ROUNDS << "\n"
      //<< "THRESH: " << THRESH << "\n"

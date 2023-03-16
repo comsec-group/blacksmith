@@ -11,8 +11,8 @@ void DramAnalyzer::find_bank_conflicts() {
     remaining_tries--;
     auto a1 = start_address + (dist(gen)%(config.memory_size/64))*64;
     auto a2 = start_address + (dist(gen)%(config.memory_size/64))*64;
-    auto ret1 = measure_time(a1, a2);
-    auto ret2 = measure_time(a1, a2);
+    auto ret1 = measure_time(a1, a2, config.drama_rounds);
+    auto ret2 = measure_time(a1, a2, config.drama_rounds);
 
     if ((ret1 > config.threshold) && (ret2 > config.threshold)) {
       bool all_banks_set = true;
@@ -21,8 +21,8 @@ void DramAnalyzer::find_bank_conflicts() {
           all_banks_set = false;
         } else {
           auto bank = banks.at(i);
-          ret1 = measure_time(a1, bank[0]);
-          ret2 = measure_time(a2, bank[0]);
+          ret1 = measure_time(a1, bank[0], config.drama_rounds);
+          ret2 = measure_time(a2, bank[0], config.drama_rounds);
           if ((ret1 > config.threshold) || (ret2 > config.threshold)) {
             // possibly noise if only exactly one is true,
             // i.e., (ret1 > THRESH) or (ret2 > THRESH)
@@ -67,7 +67,7 @@ void DramAnalyzer::find_targets(std::vector<volatile char *> &target_bank) {
     uint64_t cumulative_times = 0;
     for (size_t i = 0; i < num_repetitions; i++) {
       for (const auto &addr : tmp) {
-        cumulative_times += measure_time(a1, addr);
+        cumulative_times += measure_time(a1, addr, config.drama_rounds);
       }
     }
     cumulative_times /= num_repetitions;

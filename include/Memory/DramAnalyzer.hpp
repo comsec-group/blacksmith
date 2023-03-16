@@ -33,11 +33,11 @@ class DramAnalyzer {
   void find_bank_conflicts();
 
   /// Measures the time between accessing two addresses.
-  static int inline measure_time(volatile char *a1, volatile char *a2) {
+  static int inline measure_time(volatile char *a1, volatile char *a2, size_t rounds) {
     uint64_t before, after,sum,delta;
     sum = 0;
 
-    for (size_t i = 0; i < DRAMA_ROUNDS; i++) {
+    for (size_t i = 0; i < rounds; i++) {
         mfence();
         before = rdtscp();
         *a1;
@@ -53,7 +53,7 @@ class DramAnalyzer {
         clflushopt(a1);
         clflushopt(a2);
     }
-    return (int)((sum) / DRAMA_ROUNDS);
+    return (int)((sum) / rounds);
   }
 
   std::vector<uint64_t> get_bank_rank_functions();

@@ -33,12 +33,4 @@ uint64_t static inline GB(uint64_t value) {
 #define FF_BOLD "\033[1m"
 #define F_RESET "\033[0m" // reset to default font face/color
 
-// ########################################################
-// ################### CONFIG PARAMETERS ##################
-// ########################################################
-
-// number of rounds to measure cache hit/miss latency
-#define DRAMA_ROUNDS 1000
-
-
 #endif /* GLOBAL_DEFINES */

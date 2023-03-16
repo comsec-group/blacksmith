@@ -21,6 +21,7 @@ struct BlacksmithConfig {
     uint64_t max_rows;  // maximum number of aggressor rows
     uint8_t threshold;  // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
     size_t hammer_rounds;  // number of rounds to hammer
+    size_t drama_rounds;  // number of rounds to measure cache hit/miss latency
     uint64_t memory_size;
     std::vector<BitDef> row_bits;
     std::vector<BitDef> col_bits;
