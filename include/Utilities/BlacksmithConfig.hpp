@@ -44,7 +44,7 @@ struct BlacksmithConfig {
     uint8_t threshold;  // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
     size_t hammer_rounds;  // number of rounds to hammer
     size_t drama_rounds;  // number of rounds to measure cache hit/miss latency
-    uint64_t memory_size;
+    uint64_t memory_size;  // memory size in bytes to allocate
     std::vector<BitDef> row_bits;
     std::vector<BitDef> col_bits;
     std::vector<BitDef> bank_bits;
