@@ -52,8 +52,5 @@ uint64_t static inline GB(uint64_t value) {
 // number of conflicting addresses to be determined for each bank
 #define NUM_TARGETS 10
 
-// maximum number of aggressor rows
-#define MAX_ROWS 30
-
 
 #endif /* GLOBAL_DEFINES */

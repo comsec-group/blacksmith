@@ -139,7 +139,7 @@ void Logger::log_global_defines() {
      << "HAMMER_ROUNDS: " << HAMMER_ROUNDS << "\n"
      << "THRESH: " << THRESH << "\n"
      << "NUM_TARGETS: " << NUM_TARGETS << "\n"
-     << "MAX_ROWS: " << MAX_ROWS << "\n"
+     //<< "MAX_ROWS: " << MAX_ROWS << "\n"
      //<< "NUM_BANKS: " << NUM_BANKS << "\n"
      //<< "DIMM: " << DIMM << "\n"
      //<< "CHANNEL: " << CHANNEL << "\n"

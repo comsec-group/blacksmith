@@ -251,14 +251,14 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
 #endif
 }
 
-[[maybe_unused]] void TraditionalHammerer::n_sided_hammer(Memory &memory, int acts, long runtime_limit) {
+[[maybe_unused]] void TraditionalHammerer::n_sided_hammer(Memory &memory, BlacksmithConfig &config, int acts, long runtime_limit) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<size_t> dist(0, std::numeric_limits<size_t>::max());
 
   const auto execution_limit = get_timestamp_sec() + runtime_limit;
   while (get_timestamp_sec() < execution_limit) {
-    size_t aggressor_rows_size = (dist(gen)%(MAX_ROWS - 3)) + 3;  // number of aggressor rows
+    size_t aggressor_rows_size = (dist(gen)%(config.max_rows - 3)) + 3;  // number of aggressor rows
     size_t v = 2;  // distance between aggressors (within a pair)
     size_t d = dist(gen)%16;  // distance of each double-sided aggressor pair
 
