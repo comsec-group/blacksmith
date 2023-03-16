@@ -5,20 +5,18 @@
 
 class TraditionalHammerer {
  private:
-  static void hammer(std::vector<volatile char *> &aggressors);
-
-  static void hammer_sync(std::vector<volatile char *> &aggressors, int acts, volatile char *d1, volatile char *d2);
+  static void hammer_sync(std::vector<volatile char *> &aggressors, size_t reps, int acts, volatile char *d1, volatile char *d2);
 
  public:
   // do n-sided hammering
   [[maybe_unused]] static void n_sided_hammer(Memory &memory, BlacksmithConfig &config, int acts, long runtime_limit);
 
   // run experiment where we systematically try out all possible offsets
-  [[maybe_unused]] static void n_sided_hammer_experiment(Memory &memory, int acts);
+  [[maybe_unused]] static void n_sided_hammer_experiment(Memory &memory, size_t reps, int acts);
 
   static void n_sided_hammer_experiment_frequencies(Memory &memory, BlacksmithConfig &config);
 
-  static void hammer(std::vector<volatile char *> &aggressors, size_t hammer_rounds);
+  static void hammer(std::vector<volatile char *> &aggressors, size_t reps);
 
   static void hammer_flush_early(std::vector<volatile char *> &aggressors, size_t reps);
 };

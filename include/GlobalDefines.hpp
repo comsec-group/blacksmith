@@ -43,8 +43,5 @@ uint64_t static inline GB(uint64_t value) {
 // size in bytes of a cacheline
 #define CACHELINE_SIZE 64
 
-// number of rounds to hammer
-#define HAMMER_ROUNDS 1000000
-
 
 #endif /* GLOBAL_DEFINES */

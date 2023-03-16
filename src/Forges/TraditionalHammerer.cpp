@@ -3,10 +3,6 @@
 #include "Utilities/TimeHelper.hpp"
 #include "Blacksmith.hpp"
 
-/// Performs hammering on given aggressor rows for HAMMER_ROUNDS times.
-void TraditionalHammerer::hammer(std::vector<volatile char *> &aggressors) {
-  hammer(aggressors, HAMMER_ROUNDS);
-}
 
 void TraditionalHammerer::hammer(std::vector<volatile char *> &aggressors, size_t reps) {
   for (size_t i = 0; i < reps; i++) {
@@ -31,7 +27,7 @@ void TraditionalHammerer::hammer_flush_early(std::vector<volatile char *> &aggre
 }
 
 /// Performs synchronized hammering on the given aggressor rows.
-void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, int acts,
+void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, size_t reps, int acts,
                                       volatile char *d1, volatile char *d2) {
   size_t ref_rounds = std::max(1UL, acts/aggressors.size());
 
@@ -59,7 +55,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
   }
 
   // perform hammering for HAMMER_ROUNDS/ref_rounds times
-  for (size_t i = 0; i < HAMMER_ROUNDS/ref_rounds; i++) {
+  for (size_t i = 0; i < reps/ref_rounds; i++) {
     for (size_t j = 0; j < agg_rounds; j++) {
       for (size_t k = 0; k < aggressors.size() - 2; k++) {
         (void)(*aggressors[k]);
@@ -86,7 +82,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
   }
 }
 
-[[maybe_unused]] void TraditionalHammerer::n_sided_hammer_experiment(Memory &memory, int acts) {
+[[maybe_unused]] void TraditionalHammerer::n_sided_hammer_experiment(Memory &memory, size_t reps, int acts) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<size_t> dist(0, std::numeric_limits<size_t>::max());
@@ -181,7 +177,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
         if (!program_args.use_synchronization) {
           // CONVENTIONAL HAMMERING
           Logger::log_info(format_string("Hammering %d aggressors on bank %d", num_aggs, TARGET_BANK));
-          hammer(aggressors);
+          hammer(aggressors, reps);
         } else if (program_args.use_synchronization) {
           // SYNCHRONIZED HAMMERING
           // uses one dummy that are hammered repeatedly until the refresh is detected
@@ -195,7 +191,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
                   d2.row, d2.to_virt()));
 
           Logger::log_info(format_string("Hammering sync %d aggressors on bank %d", num_aggs, TARGET_BANK));
-          hammer_sync(aggressors, acts, (volatile char *) d1.to_virt(), (volatile char *) d2.to_virt());
+          hammer_sync(aggressors, reps, acts, (volatile char *) d1.to_virt(), (volatile char *) d2.to_virt());
         }
 
         // check 20 rows before and after the placed aggressors for flipped bits
@@ -289,7 +285,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
         // CONVENTIONAL HAMMERING
         Logger::log_info(format_string("Hammering %d aggressors with v=%d d=%d on bank %d",
             aggressor_rows_size, v, d, ba));
-        hammer(aggressors);
+        hammer(aggressors, config.hammer_rounds);
       } else if (program_args.use_synchronization) {
         // SYNCHRONIZED HAMMERING
         // uses two dummies that are hammered repeatedly until the refresh is detected
@@ -304,7 +300,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
               acts - ((acts/aggressors.size())*aggressors.size())));
         }
         Logger::log_info(format_string("Hammering sync %d aggressors on bank %d", aggressor_rows_size, ba));
-        hammer_sync(aggressors, acts, (volatile char *) d1.to_virt(), (volatile char *) d2.to_virt());
+        hammer_sync(aggressors, config.hammer_rounds, acts, (volatile char *) d1.to_virt(), (volatile char *) d2.to_virt());
       }
 
       // check 100 rows before and after for flipped bits
