@@ -6,9 +6,6 @@
 #include "ReplayingHammerer.hpp"
 
 class FuzzyHammerer {
-private:
-  BlacksmithConfig &config;
-
  public:
   // counter for the number of generated patterns so far
   static size_t cnt_generated_patterns;
@@ -19,8 +16,6 @@ private:
   // this and cnt_pattern_probes are a workaround for the generate_pattern_for_ARM as we there somehow need to keep
   // track of whether we need to generate new pattern or only randomize the mapping of an existing one
   static HammeringPattern hammering_pattern;
-
-  explicit FuzzyHammerer(BlacksmithConfig &config);
 
   // maps (pattern_id) -> (address_mapper_id -> number_of_detected_bit_flips) where 'number_of_detected_bit_flips'
   // refers to the number of bit flips we detected when hammering a pattern at a specific location

@@ -6,8 +6,6 @@
 #include "Fuzzer/PatternBuilder.hpp"
 #include "Forges/ReplayingHammerer.hpp"
 
-FuzzyHammerer::FuzzyHammerer(BlacksmithConfig &config): config(config) {}
-
 // initialize the static variables
 size_t FuzzyHammerer::cnt_pattern_probes = 0UL;
 size_t FuzzyHammerer::cnt_generated_patterns = 0UL;
