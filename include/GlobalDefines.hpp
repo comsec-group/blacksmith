@@ -49,8 +49,5 @@ uint64_t static inline GB(uint64_t value) {
 // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
 #define THRESH 330  // luca: N.B. that we have different timing function than orig blacksmith
 
-// number of conflicting addresses to be determined for each bank
-#define NUM_TARGETS 10
-
 
 #endif /* GLOBAL_DEFINES */
