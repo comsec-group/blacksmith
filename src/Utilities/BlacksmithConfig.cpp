@@ -14,32 +14,6 @@
 
 #define BIT_SET(x, b) (x |= 1<<(b))
 
-// (de-)serialize std::variant
-template<typename T, typename... Ts>
-void variant_from_json(const nlohmann::json &j, std::variant<Ts...> &data) {
-  try {
-    data = j.get<T>();
-  } catch (...) {
-  }
-}
-
-template<typename... Ts>
-struct nlohmann::adl_serializer<std::variant<Ts...>> {
-  static void to_json(nlohmann::json &j, const std::variant<Ts...> &data) {
-    std::visit([&j](const auto &v) {
-      j = v;
-    }, data);
-  }
-
-  static void from_json(const nlohmann::json &j, std::variant<Ts...> &data) {
-    (variant_from_json<Ts>(j, data), ...);
-  }
-};
-
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
-                                   total_banks, max_rows, threshold, hammer_rounds, drama_rounds,
-                                   memory_size, row_bits, col_bits, bank_bits)
-
 // helper type for std::visit
 template<class... Ts>
 struct overloaded : Ts ... {
