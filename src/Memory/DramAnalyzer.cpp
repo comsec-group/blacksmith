@@ -14,7 +14,7 @@ void DramAnalyzer::find_bank_conflicts() {
     auto ret1 = measure_time(a1, a2);
     auto ret2 = measure_time(a1, a2);
 
-    if ((ret1 > THRESH) && (ret2 > THRESH)) {
+    if ((ret1 > config.threshold) && (ret2 > config.threshold)) {
       bool all_banks_set = true;
       for (size_t i = 0; i < config.total_banks; i++) {
         if (banks.at(i).empty()) {
@@ -23,7 +23,7 @@ void DramAnalyzer::find_bank_conflicts() {
           auto bank = banks.at(i);
           ret1 = measure_time(a1, bank[0]);
           ret2 = measure_time(a2, bank[0]);
-          if ((ret1 > THRESH) || (ret2 > THRESH)) {
+          if ((ret1 > config.threshold) || (ret2 > config.threshold)) {
             // possibly noise if only exactly one is true,
             // i.e., (ret1 > THRESH) or (ret2 > THRESH)
             goto reset;
@@ -71,7 +71,7 @@ void DramAnalyzer::find_targets(std::vector<volatile char *> &target_bank) {
       }
     }
     cumulative_times /= num_repetitions;
-    if ((cumulative_times/tmp.size()) > THRESH) {
+    if ((cumulative_times/tmp.size()) > config.threshold) {
       tmp.insert(a1);
       target_bank.push_back(a1);
     }

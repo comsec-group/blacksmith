@@ -137,7 +137,7 @@ void Logger::log_global_defines() {
   ss << "DRAMA_ROUNDS: " << DRAMA_ROUNDS << "\n"
      << "CACHELINE_SIZE: " << CACHELINE_SIZE << "\n"
      << "HAMMER_ROUNDS: " << HAMMER_ROUNDS << "\n"
-     << "THRESH: " << THRESH << "\n"
+     //<< "THRESH: " << THRESH << "\n"
      //<< "NUM_TARGETS: " << NUM_TARGETS << "\n"
      //<< "MAX_ROWS: " << MAX_ROWS << "\n"
      //<< "NUM_BANKS: " << NUM_BANKS << "\n"

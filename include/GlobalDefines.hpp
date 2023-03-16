@@ -46,8 +46,5 @@ uint64_t static inline GB(uint64_t value) {
 // number of rounds to hammer
 #define HAMMER_ROUNDS 1000000
 
-// threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
-#define THRESH 330  // luca: N.B. that we have different timing function than orig blacksmith
-
 
 #endif /* GLOBAL_DEFINES */
