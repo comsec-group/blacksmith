@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <memory>
+#include "BlacksmithConfig.hpp"
 
 template<typename ... Args>
 std::string format_string(const std::string &format, Args ... args) {
@@ -49,9 +50,9 @@ class Logger {
 
   static void log_timestamp();
 
-  static void log_global_defines();
+  static void log_config(BlacksmithConfig &config);
 
-  static void log_metadata(const char *commit_hash, unsigned long run_time_limit_seconds);
+  static void log_metadata(const char *commit_hash, BlacksmithConfig &config, unsigned long run_time_limit_seconds);
 
   static void log_analysis_stage(const std::string &message, bool newline = true);
 

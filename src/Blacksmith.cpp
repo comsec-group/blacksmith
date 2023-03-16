@@ -58,9 +58,6 @@ int main(int argc, char **argv) {
 
   handle_args(argc, argv);
 
-  // prints the current git commit and some program metadata
-  Logger::log_metadata(GIT_COMMIT_HASH, program_args.runtime_limit);
-
   // load config
   Logger::log_info("loading dram config");
   BlacksmithConfig config;
@@ -73,6 +70,9 @@ int main(int argc, char **argv) {
   MemConfiguration memConfiguration{};
   to_memconfig(config, &memConfiguration);
   DRAMAddr::set_mem_config(memConfiguration);
+
+  // prints the current git commit and some program metadata
+  Logger::log_metadata(GIT_COMMIT_HASH, config, program_args.runtime_limit);
 
   // give this process the highest CPU priority so it can hammer with less interruptions
   int ret = setpriority(PRIO_PROCESS, 0, -20);

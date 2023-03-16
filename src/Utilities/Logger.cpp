@@ -115,7 +115,7 @@ void Logger::log_failure(const std::string &message, bool newline) {
   if (newline) instance.logfile << std::endl;
 }
 
-void Logger::log_metadata(const char *commit_hash, unsigned long run_time_limit_seconds) {
+void Logger::log_metadata(const char *commit_hash, BlacksmithConfig &config, unsigned long run_time_limit_seconds) {
   Logger::log_info("General information about this fuzzing run:");
 
   char name[1024] = "";
@@ -128,22 +128,14 @@ void Logger::log_metadata(const char *commit_hash, unsigned long run_time_limit_
      << "Run time limit: " << run_time_limit_seconds << " (" << format_timestamp(run_time_limit_seconds) << ")";
   Logger::log_data(ss.str());
 
-  log_global_defines();
+  log_config(config);
 }
 
-void Logger::log_global_defines() {
-  Logger::log_info("Printing run configuration (GlobalDefines.hpp):");
+void Logger::log_config(BlacksmithConfig &config) {
+  Logger::log_info("Printing run configuration:");
   std::stringstream ss;
-  ss //<< "DRAMA_ROUNDS: " << DRAMA_ROUNDS << "\n"
-     //<< "CACHELINE_SIZE: " << CACHELINE_SIZE << "\n"
-     //<< "HAMMER_ROUNDS: " << HAMMER_ROUNDS << "\n"
-     //<< "THRESH: " << THRESH << "\n"
-     //<< "NUM_TARGETS: " << NUM_TARGETS << "\n"
-     //<< "MAX_ROWS: " << MAX_ROWS << "\n"
-     //<< "NUM_BANKS: " << NUM_BANKS << "\n"
-     //<< "DIMM: " << DIMM << "\n"
-     //<< "CHANNEL: " << CHANNEL << "\n"
-     //<< "MEM_SIZE: " << MEM_SIZE << "\n" // TODO log config?
+  nlohmann::json json = config;
+  ss << "Config:" << json.dump() << std::endl
      << "PAGE_SIZE: " << getpagesize() << std::endl;
   Logger::log_data(ss.str());
 }
