@@ -135,7 +135,7 @@ void Logger::log_global_defines() {
   Logger::log_info("Printing run configuration (GlobalDefines.hpp):");
   std::stringstream ss;
   ss << "DRAMA_ROUNDS: " << DRAMA_ROUNDS << "\n"
-     << "CACHELINE_SIZE: " << CACHELINE_SIZE << "\n"
+     //<< "CACHELINE_SIZE: " << CACHELINE_SIZE << "\n"
      //<< "HAMMER_ROUNDS: " << HAMMER_ROUNDS << "\n"
      //<< "THRESH: " << THRESH << "\n"
      //<< "NUM_TARGETS: " << NUM_TARGETS << "\n"

@@ -40,8 +40,5 @@ uint64_t static inline GB(uint64_t value) {
 // number of rounds to measure cache hit/miss latency
 #define DRAMA_ROUNDS 1000
 
-// size in bytes of a cacheline
-#define CACHELINE_SIZE 64
-
 
 #endif /* GLOBAL_DEFINES */
