@@ -12,6 +12,8 @@
 
 typedef std::variant<uint64_t, std::vector<uint64_t>> BitDef;
 
+size_t bitdef_to_bitstr(const BitDef &def);
+
 // (de-)serialize std::variant
 template<typename T, typename... Ts>
 void variant_from_json(const nlohmann::json &j, std::variant<Ts...> &data) {
@@ -34,40 +36,47 @@ struct nlohmann::adl_serializer<std::variant<Ts...>> {
   }
 };
 
-struct BlacksmithConfig {
-    std::string name;
-    uint64_t channels;
-    uint64_t dimms;
-    uint64_t ranks;
-    uint64_t total_banks;
-    uint64_t max_rows;  // maximum number of aggressor rows
-    uint8_t threshold;  // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
-    size_t hammer_rounds;  // number of rounds to hammer
-    size_t drama_rounds;  // number of rounds to measure cache hit/miss latency
-    uint64_t memory_size;  // memory size in bytes to allocate
-    std::vector<BitDef> row_bits;
-    std::vector<BitDef> col_bits;
-    std::vector<BitDef> bank_bits;
+class BlacksmithConfig {
+private:
+public:
+  /**
+   * Parse a config file into a BlacksmithConfig
+   *
+   * @param filepath path to a JSON config file
+   * @param out a pointer to a BlacksmithConfig. `out' will be populated according to the contents of `filepath',
+   * @return true iff deserialization succeeded, false otherwise
+   */
+  static BlacksmithConfig from_jsonfile(const std::string &filepath);
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
-                                   total_banks, max_rows, threshold, hammer_rounds, drama_rounds,
-                                   memory_size, row_bits, col_bits, bank_bits)
+  BlacksmithConfig();
+
+  std::string name;
+  uint64_t channels;
+  uint64_t dimms;
+  uint64_t ranks;
+  uint64_t total_banks;
+  uint64_t max_rows;  // maximum number of aggressor rows
+  uint8_t threshold;  // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
+  size_t hammer_rounds;  // number of rounds to hammer
+  size_t drama_rounds;  // number of rounds to measure cache hit/miss latency
+  uint64_t memory_size;  // memory size in bytes to allocate
+  std::vector<BitDef> row_bits;
+  std::vector<BitDef> col_bits;
+  std::vector<BitDef> bank_bits;
+
+  /**
+   * Convert a BlacksmithConfig to a MemConfiguration for use in DRAMAddr.
+   *
+   * @param config a reference to a BlacksmithConfig
+   * @param out a pointer to a MemConfiguration. `out' will be updated with bit definitions from BlacksmithConfig
+   */
+  MemConfiguration to_memconfig();
+  std::vector<uint64_t> bank_rank_functions();
+
+  uint64_t row_function();
+
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
+                                 total_banks, max_rows, threshold, hammer_rounds, drama_rounds,
+                                 memory_size, row_bits, col_bits, bank_bits)
 };
-
-/**
- * Parse a config file into a BlacksmithConfig
- *
- * @param filepath path to a JSON config file
- * @param out a pointer to a BlacksmithConfig. `out' will be populated according to the contents of `filepath',
- * @return true iff deserialization succeeded, false otherwise
- */
-bool parse_config(const std::string &filepath, BlacksmithConfig *out);
-
-/**
- * Convert a BlacksmithConfig to a MemConfiguration for use in DRAMAddr.
- *
- * @param config a reference to a BlacksmithConfig
- * @param out a pointer to a MemConfiguration. `out' will be updated with bit definitions from BlacksmithConfig
- */
-void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out);
 #endif //BLACKSMITH_BLACKSMITHCONFIG_HPP

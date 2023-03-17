@@ -23,13 +23,13 @@ struct overloaded : Ts ... {
 // explicit deduction guide (not needed as of C++20)
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
-bool parse_config(const std::string &filepath, BlacksmithConfig *out) {
+BlacksmithConfig::BlacksmithConfig() = default;
+
+BlacksmithConfig BlacksmithConfig::from_jsonfile(const std::string &filepath) {
   std::ifstream is(filepath);
   nlohmann::json j;
   is >> j;
-  *out = j.get<BlacksmithConfig>();
-  Logger::log_debug(format_string("Parse config %s", j.dump().c_str()));
-  return true;
+  return j.get<BlacksmithConfig>();
 }
 
 /**
@@ -37,7 +37,7 @@ bool parse_config(const std::string &filepath, BlacksmithConfig *out) {
  * @param def a BitDef
  * @return the bit string represented by `def'
  */
-static size_t bitdef_to_bitstr(const BitDef &def) {
+size_t bitdef_to_bitstr(const BitDef &def) {
   size_t res = 0;
   std::visit(overloaded{
       [&res](const uint64_t &bit) {
@@ -52,18 +52,19 @@ static size_t bitdef_to_bitstr(const BitDef &def) {
   return res;
 }
 
-void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out) {
-  out->IDENTIFIER = (CHANS(config.channels) | DIMMS(config.dimms) | RANKS(config.ranks) | BANKS(config.total_banks));
+MemConfiguration BlacksmithConfig::to_memconfig() {
+  MemConfiguration out{};
+  out.IDENTIFIER = (CHANS(channels) | DIMMS(dimms) | RANKS(ranks) | BANKS(total_banks));
   size_t i = 0;
 
-  assert(MTX_SIZE == config.bank_bits.size() + config.col_bits.size() + config.row_bits.size());
+  assert(MTX_SIZE == bank_bits.size() + col_bits.size() + row_bits.size());
 
-  out->BK_SHIFT = MTX_SIZE - config.bank_bits.size();
-  out->BK_MASK = (1 << (config.bank_bits.size())) - 1;
-  out->COL_SHIFT = MTX_SIZE - config.bank_bits.size() - config.col_bits.size();
-  out->COL_MASK = (1 << (config.col_bits.size())) - 1;
-  out->ROW_SHIFT = MTX_SIZE - config.bank_bits.size() - config.col_bits.size() - config.row_bits.size();
-  out->ROW_MASK = (1 << (config.row_bits.size())) - 1;
+  out.BK_SHIFT = MTX_SIZE - bank_bits.size();
+  out.BK_MASK = (1 << (bank_bits.size())) - 1;
+  out.COL_SHIFT = MTX_SIZE - bank_bits.size() - col_bits.size();
+  out.COL_MASK = (1 << (col_bits.size())) - 1;
+  out.ROW_SHIFT = MTX_SIZE - bank_bits.size() - col_bits.size() - row_bits.size();
+  out.ROW_MASK = (1 << (row_bits.size())) - 1;
 
   // construct dram matrix
   std::array<size_t, MTX_SIZE> dramMtx{};
@@ -71,12 +72,12 @@ void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out) {
     dramMtx[i++] = bitdef_to_bitstr(def);
   };
   // bank
-  std::for_each(config.bank_bits.begin(), config.bank_bits.end(), updateDramMtx);
+  std::for_each(bank_bits.begin(), bank_bits.end(), updateDramMtx);
   // col
-  std::for_each(config.col_bits.begin(), config.col_bits.end(), updateDramMtx);
+  std::for_each(col_bits.begin(), col_bits.end(), updateDramMtx);
   // row
-  std::for_each(config.row_bits.begin(), config.row_bits.end(), updateDramMtx);
-  out->DRAM_MTX = dramMtx;
+  std::for_each(row_bits.begin(), row_bits.end(), updateDramMtx);
+  out.DRAM_MTX = dramMtx;
 
   // construct addr matrix
   std::array<size_t, MTX_SIZE> addrMtx{};
@@ -99,5 +100,23 @@ void to_memconfig(const BlacksmithConfig &config, MemConfiguration *out) {
       addrMtx[row] |= matrix(row, col) << (MTX_SIZE - col - 1);
     }
   }
-  out->ADDR_MTX = addrMtx;
+  out.ADDR_MTX = addrMtx;
+  return out;
+}
+
+std::vector<uint64_t> BlacksmithConfig::bank_rank_functions() {
+  std::vector<uint64_t> bank_rank_function(bank_bits.size());
+  int i = 0;
+  std::for_each(bank_bits.begin(), bank_bits.end(), [&i, &bank_rank_function](const BitDef &def) {
+    bank_rank_function[i++] = bitdef_to_bitstr(def);
+  });
+  return bank_rank_function;
+}
+
+uint64_t BlacksmithConfig::row_function() {
+  uint64_t row_function = 0;
+  std::for_each(row_bits.begin(), row_bits.end(), [&row_function](const BitDef &def) {
+    row_function |= bitdef_to_bitstr(def);
+  });
+  return row_function;
 }
