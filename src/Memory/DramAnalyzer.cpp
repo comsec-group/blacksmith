@@ -79,39 +79,25 @@ void DramAnalyzer::find_targets(std::vector<volatile char *> &target_bank) {
 }
 
 DramAnalyzer::DramAnalyzer(volatile char *target, BlacksmithConfig &config) :
-  config(config), row_function(0), start_address(target) {
+  config(config), start_address(target) {
   std::random_device rd;
   gen = std::mt19937(rd());
   dist = std::uniform_int_distribution<>(0, std::numeric_limits<int>::max());
   banks = std::vector<std::vector<volatile char *>>(config.total_banks, std::vector<volatile char *>());
-}
-
-void DramAnalyzer::load_known_functions(int num_ranks) {
-  if (num_ranks==1) {
-    bank_rank_functions = std::vector<uint64_t>({0x2040, 0x24000, 0x48000, 0x90000}); // TODO refactor?!
-    row_function = 0x3ffe0000;
-  } else if (num_ranks==2) {
-    bank_rank_functions = std::vector<uint64_t>({0x2040, 0x44000, 0x88000, 0x110000, 0x220000});
-    row_function = 0x3ffc0000;
-  } else {
-    Logger::log_error("Cannot load bank/rank and row function if num_ranks is not 1 or 2.");
-    exit(1);
-  }
-
-  Logger::log_info("Loaded bank/rank and row function:");
-  Logger::log_data(format_string("Row function 0x%" PRIx64, row_function));
-  std::stringstream ss;
-  ss << "Bank/rank functions (" << bank_rank_functions.size() << "): ";
-  for (auto bank_rank_function : bank_rank_functions) {
-    ss << "0x" << std::hex << bank_rank_function << " ";
-  }
-  Logger::log_data(ss.str());
+  bank_rank_functions = config.bank_rank_functions();
+  row_function = config.row_function();
 }
 
 size_t DramAnalyzer::count_acts_per_ref() {
-  // pick two random same-bank addresses
-  volatile char *a = banks.at(0).at(0);
-  volatile char *b = banks.at(0).at(1);
+  // collect bitmask for all bank fns, set a to first address in allocated mem
+  size_t bank_mask = bitdef_to_bitstr(config.bank_bits.at(0));
+  volatile char *a = start_address;
+  size_t a_mask = ((size_t)a) & bank_mask;
+  // starting with a+1, find address b on the same bank as a
+  volatile char *b;
+  for (b = a+1; (((size_t)b) & bank_mask) != a_mask; ++b);
+
+  Logger::log_debug(format_string("We will use %p and %p for count_acts_per_ref", a, b));
 
   size_t skip_first_N = 50;
   std::vector<uint64_t> acts;
@@ -155,21 +141,28 @@ size_t DramAnalyzer::count_acts_per_ref() {
 
     activation_count += 2;
 
-    if ((after - before) > 1000) {
-      if (i > skip_first_N && activation_count_old!=0) {
-        uint64_t value = (activation_count - activation_count_old)*2;
+    if ((after - before) > 1000) {  // hard coded magic no?
+      if (i > skip_first_N && activation_count_old != 0) {
+        uint64_t value = (activation_count - activation_count_old) * 2;
         acts.push_back(value);
         running_sum += value;
         // check after each 200 data points if our standard deviation reached 1 -> then stop collecting measurements
         if ((acts.size()%200)==0 && compute_std(acts, running_sum, acts.size())<3.0)
           break;
+        if ((acts.size()%1000000)==0) {
+          Logger::log_info(format_string("Failed to fix standard derivation (%f) after 1000000 rounds. Retrying", compute_std(acts, running_sum, acts.size())));
+          acts.clear();
+          running_sum = 0;
+          i = 0;
+          activation_count = 0;
+        }
       }
       activation_count_old = activation_count;
     }
   }
 
   auto activations = (running_sum/acts.size());
-  Logger::log_info("Determined the number of possible ACTs per refresh interval.");
+  Logger::log_info(format_string("Determined the number of possible ACTs per refresh interval after %d rounds.", acts.size()));
   Logger::log_data(format_string("num_acts_per_tREFI: %lu", activations));
 
   return activations;
