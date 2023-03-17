@@ -86,10 +86,6 @@ DramAnalyzer::DramAnalyzer(volatile char *target, BlacksmithConfig &config) :
   banks = std::vector<std::vector<volatile char *>>(config.total_banks, std::vector<volatile char *>());
 }
 
-std::vector<uint64_t> DramAnalyzer::get_bank_rank_functions() {
-  return bank_rank_functions;
-}
-
 void DramAnalyzer::load_known_functions(int num_ranks) {
   if (num_ranks==1) {
     bank_rank_functions = std::vector<uint64_t>({0x2040, 0x24000, 0x48000, 0x90000}); // TODO refactor?!

@@ -56,8 +56,6 @@ class DramAnalyzer {
     return (int)((sum) / rounds);
   }
 
-  std::vector<uint64_t> get_bank_rank_functions();
-
   void load_known_functions(int num_ranks);
 
   /// Determine the number of possible total activations to an aggressor pair within a refresh interval.
