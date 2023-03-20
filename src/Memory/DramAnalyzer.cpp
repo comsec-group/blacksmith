@@ -89,13 +89,15 @@ DramAnalyzer::DramAnalyzer(volatile char *target, BlacksmithConfig &config) :
 }
 
 size_t DramAnalyzer::count_acts_per_ref() {
-  // collect bitmask for all bank fns, set a to first address in allocated mem
+  // collect bitmask for all bank fns, set ``a'' to first address in allocated mem
   size_t bank_mask = bitdef_to_bitstr(config.bank_bits.at(0));
   volatile char *a = start_address;
-  size_t a_mask = ((size_t)a) & bank_mask;
-  // starting with a+1, find address b on the same bank as a
+  size_t a_bank_mask = ((size_t)a) & bank_mask;
+  size_t row_mask = bitdef_to_bitstr(config.row_bits.at(0));
+  size_t a_row_mask = ((size_t)a) & row_mask;
+  // starting with a+1, find different row address b on the same bank as a
   volatile char *b;
-  for (b = a+1; (((size_t)b) & bank_mask) != a_mask; ++b);
+  for (b = a+1; (((size_t)b) & bank_mask) != a_bank_mask || (((size_t)b) & row_mask) == a_row_mask; ++b);
 
   Logger::log_debug(format_string("We will use %p and %p for count_acts_per_ref", a, b));
 
