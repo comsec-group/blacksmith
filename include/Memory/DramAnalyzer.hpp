@@ -10,17 +10,9 @@
 
 class DramAnalyzer {
  private:
-  std::vector<std::vector<volatile char *>> banks;
-
   BlacksmithConfig &config;
 
   volatile char *start_address;
-
-  void find_targets(std::vector<volatile char *> &target_bank);
-
-  std::mt19937 gen;
-
-  std::uniform_int_distribution<int> dist;
 
  public:
   explicit DramAnalyzer(volatile char *target, BlacksmithConfig &config);
