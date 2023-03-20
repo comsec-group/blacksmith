@@ -77,23 +77,20 @@ int main(int argc, char **argv) {
   memory.allocate_memory(config.memory_size);
 
   // find address sets that create bank conflicts
-  Logger::log_info("finding bank conflicts...");
+  //Logger::log_info("finding bank conflicts...");
   DramAnalyzer dram_analyzer(memory.get_starting_address(), config);
-  dram_analyzer.find_bank_conflicts();
-  if (program_args.num_ranks != 0) {
-    dram_analyzer.load_known_functions(program_args.num_ranks);
-  } else {
-    Logger::log_error("Program argument '--ranks <integer>' was probably not passed. Cannot continue.");
-    exit(EXIT_FAILURE);
-  }
+  //dram_analyzer.find_bank_conflicts();
 
   // initialize the DRAMAddr class to load the proper memory configuration
   //luca initialize the global Config variable for memory with the data from the config file we edited
   DRAMAddr::initialize(memory.get_starting_address());
 
   // count the number of possible activations per refresh interval, if not given as program argument
-  if (program_args.acts_per_ref==0)
-    program_args.acts_per_ref = dram_analyzer.count_acts_per_ref()*2;
+  if (program_args.acts_per_ref==0) {
+    Logger::log_info("Experimentally determining activations per refresh cycle");
+    program_args.acts_per_ref = dram_analyzer.count_acts_per_ref() * 2;
+    Logger::log_info(format_string("It seems we can fit %lu row activations into a single refresh cycle", program_args.acts_per_ref));
+  }
 
   Logger::log_info("Jumping to hammering logic");
   if (!program_args.load_json_filename.empty()) {

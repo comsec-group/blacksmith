@@ -12,11 +12,7 @@ class DramAnalyzer {
  private:
   std::vector<std::vector<volatile char *>> banks;
 
-  std::vector<uint64_t> bank_rank_functions;
-
   BlacksmithConfig &config;
-
-  uint64_t row_function;
 
   volatile char *start_address;
 
@@ -28,9 +24,6 @@ class DramAnalyzer {
 
  public:
   explicit DramAnalyzer(volatile char *target, BlacksmithConfig &config);
-
-  /// Finds addresses of the same bank causing bank conflicts when accessed sequentially
-  void find_bank_conflicts();
 
   /// Measures the time between accessing two addresses.
   static int inline measure_time(volatile char *a1, volatile char *a2, size_t rounds) {
