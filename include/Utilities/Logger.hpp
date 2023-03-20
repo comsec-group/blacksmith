@@ -31,7 +31,7 @@ class Logger {
 
  public:
 
-  static void initialize();
+  static void initialize(const std::string &logfile_filename);
 
   static void close();
 

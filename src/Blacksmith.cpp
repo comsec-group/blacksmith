@@ -51,12 +51,15 @@ int check_cpu() {
 }
 
 int main(int argc, char **argv) {
-  Logger::initialize();
+  Logger::initialize("/dev/stdout");
 
   // check if the system's CPU is supported by our hard-coded DRAM address matrices
   check_cpu();
 
   handle_args(argc, argv);
+
+  Logger::close();
+  Logger::initialize(program_args.logfile);
 
   // load config
   Logger::log_info("loading dram config");
@@ -144,6 +147,7 @@ void handle_args(int argc, char **argv) {
       {"fuzzing", {"-f", "--fuzzing"}, "perform a fuzzing run (default program mode)", 0},
       //{"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1}, TODO add arg again after refactor
       {"replay-patterns", {"-y", "--replay-patterns"}, "replays patterns given as comma-separated list of pattern IDs", 1},
+      {"logfile", {"--logfile"}, "log to specified file", 1},
       {"config", {"-c", "--config"}, "loads the specified config file (JSON) as DRAM address config.", 1},
       {"load-json", {"-j", "--load-json"}, "loads the specified JSON file generated in a previous fuzzer run, loads patterns given by --replay-patterns or determines the best ones", 1},
 
@@ -199,6 +203,8 @@ void handle_args(int argc, char **argv) {
   /**
   * optional parameters
   */
+  program_args.logfile = parsed_args["logfile"].as<std::string>(program_args.logfile);
+  Logger::log_debug(format_string("Set --logfile=%s", program_args.logfile));
   program_args.sweeping = parsed_args.has_option("sweeping") || program_args.sweeping;
   Logger::log_debug(format_string("Set --sweeping=%s", (program_args.sweeping ? "true" : "false")));
 
