@@ -204,7 +204,7 @@ void handle_args(int argc, char **argv) {
   * optional parameters
   */
   program_args.logfile = parsed_args["logfile"].as<std::string>(program_args.logfile);
-  Logger::log_debug(format_string("Set --logfile=%s", program_args.logfile));
+  Logger::log_debug(format_string("Set --logfile=%s", program_args.logfile.c_str()));
   program_args.sweeping = parsed_args.has_option("sweeping") || program_args.sweeping;
   Logger::log_debug(format_string("Set --sweeping=%s", (program_args.sweeping ? "true" : "false")));
 
