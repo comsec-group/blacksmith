@@ -9,8 +9,6 @@
 struct ProgramArguments {
   // the duration of the fuzzing run in second
   unsigned long runtime_limit = 120;
-  // the number of ranks of the DIMM to hammer
-  int num_ranks = 0;
   // no. of activations we can do within a refresh interval
   size_t acts_per_ref = 0;
   // path to logfile
