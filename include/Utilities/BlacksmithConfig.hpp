@@ -5,6 +5,8 @@
 #ifndef BLACKSMITH_BLACKSMITHCONFIG_HPP
 #define BLACKSMITH_BLACKSMITHCONFIG_HPP
 
+class BlacksmithConfig; // forward declaration needed to break include cycle
+
 #include <string>
 #include <vector>
 #include <variant>
@@ -70,7 +72,7 @@ public:
    * @param config a reference to a BlacksmithConfig
    * @param out a pointer to a MemConfiguration. `out' will be updated with bit definitions from BlacksmithConfig
    */
-  MemConfiguration to_memconfig();
+  MemConfiguration to_memconfig() const;
   std::vector<uint64_t> bank_rank_functions();
 
   uint64_t row_function();

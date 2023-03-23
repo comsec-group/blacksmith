@@ -1,5 +1,4 @@
 #include "Memory/DRAMAddr.hpp"
-#include "GlobalDefines.hpp"
 
 
 void DRAMAddr::initialize(volatile char *start_address) {
@@ -10,8 +9,8 @@ void DRAMAddr::set_base_msb(void *buff) {
   base_msb = (size_t) buff & (~((size_t) (1ULL << 30UL) - 1UL));  // get higher order bits above the super page
 }
 
-void DRAMAddr::set_config(const BlacksmithConfig &config) {
-  Config = config;
+void DRAMAddr::set_config(BlacksmithConfig &config) {
+  Config = &config;
   MemConfig = config.to_memconfig();
 }
 
@@ -84,6 +83,7 @@ void DRAMAddr::add_inplace(size_t bank_increment, size_t row_increment, size_t c
 }
 
 // Define the static DRAM configs
+BlacksmithConfig *DRAMAddr::Config;
 MemConfiguration DRAMAddr::MemConfig;
 size_t DRAMAddr::base_msb;
 
@@ -91,10 +91,10 @@ size_t DRAMAddr::base_msb;
 
 nlohmann::json DRAMAddr::get_memcfg_json() {
   nlohmann::json j;
-  j["channels"] = Config.channels;
-  j["dimms"] = Config.dimms;
-  j["ranks"] = Config.ranks;
-  j["banks"] = Config.total_banks;
+  j["channels"] = Config->channels;
+  j["dimms"] = Config->dimms;
+  j["ranks"] = Config->ranks;
+  j["banks"] = Config->total_banks;
   return j;
 }
 
