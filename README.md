@@ -54,10 +54,8 @@ Except for the parameters `--dimm-id` and `--ranks` all other parameters are opt
 
 ==== Mandatory Parameters ==================================
 
-    -d, --dimm-id
-        internal identifier of the currently inserted DIMM (default: 0)
-    -r, --ranks
-        number of ranks on the DIMM, used to determine bank/rank/row functions, assumes Intel Coffe Lake CPU (default: None)
+    -c, --config
+        path to JSON file containing the memory configuration to use. See below for sample configuration 
     
 ==== Execution Modes ==============================================
 
@@ -90,7 +88,28 @@ Except for the parameters `--dimm-id` and `--ranks` all other parameters are opt
 
 The default values of the parameters can be found in the [`struct ProgramArguments`](include/Blacksmith.hpp#L8).
 
-Configuration parameters of Blacksmith that we did not need to modify frequently, and thus are not runtime parameters, can be found in the [`GlobalDefines.hpp`](include/GlobalDefines.hpp) file.
+## Sample JSON Configuration
+
+The following configuration contains the default values previously defined in [`GlobalDefines.hpp`](include/GlobalDefines.hpp)
+as well as reverse-engineered address mappings for a Intel i5-6400 CPU with a single G.SKILL F4-2133C15-16GIS DIMM.
+
+```json
+{
+  "name": "esprimo-d757_i5-6400_gskill-F4-2133C15-16GIS",
+  "channels": 1,
+  "dimms": 1,
+  "memory_size": 1073741824,
+  "ranks": 2,
+  "total_banks": 32,
+  "max_rows": 30,
+  "threshold": 300,
+  "hammer_rounds": 1000000,
+  "drama_rounds": 1000,
+  "row_bits": [29,28,27,26,25,24,23,22,21,20,19,18],
+  "col_bits": [12,11,10,9,8,7,6,5,4,3,2,1,0],
+  "bank_bits": [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]]
+}
+```
 
 ## Citing our Work
 
