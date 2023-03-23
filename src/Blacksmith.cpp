@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <string>
 #include <array>
-#include <bitset>
 
 #include "Forges/TraditionalHammerer.hpp"
 #include "Forges/FuzzyHammerer.hpp"
@@ -65,7 +64,7 @@ int main(int argc, char **argv) {
   Logger::log_info("loading dram config");
   BlacksmithConfig config = BlacksmithConfig::from_jsonfile(program_args.config);
   Logger::log_info("Config parse success");
-  DRAMAddr::set_config(config.to_memconfig());
+  DRAMAddr::set_config(config);
 
   // prints the current git commit and some program metadata
   Logger::log_metadata(GIT_COMMIT_HASH, config, program_args.runtime_limit);
@@ -97,7 +96,7 @@ int main(int argc, char **argv) {
 
   Logger::log_info("Jumping to hammering logic");
   if (!program_args.load_json_filename.empty()) {
-    ReplayingHammerer replayer(memory);
+    ReplayingHammerer replayer(config, memory);
     if (program_args.sweeping) {
       replayer.replay_patterns_brief(program_args.load_json_filename, program_args.pattern_ids,
           MB(256), false);
@@ -110,7 +109,7 @@ int main(int argc, char **argv) {
   } else if (!program_args.do_fuzzing) {
 //    TraditionalHammerer::n_sided_hammer(memory, program_args.acts_per_ref, program_args.runtime_limit);
 //    TraditionalHammerer::n_sided_hammer_experiment(memory, program_args.acts_per_ref);
-    TraditionalHammerer::n_sided_hammer_experiment_frequencies(memory, config);
+    TraditionalHammerer::n_sided_hammer_experiment_frequencies(config, memory);
   } else {
     Logger::log_error("Invalid combination of program control-flow arguments given. "
                       "Note: Fuzzing is only supported with synchronized hammering.");
@@ -141,13 +140,13 @@ void handle_args(int argc, char **argv) {
   //    (4) and the number of arguments the option expects.
   argagg::parser argparser{{
       {"help", {"-h", "--help"}, "shows this help message", 0},
-      {"dimm-id", {"-d", "--dimm-id"}, "internal identifier of the currently inserted DIMM (default: 0)", 1},
+
+      {"config", {"-c", "--config"}, "loads the specified config file (JSON) as DRAM address config.", 1},
 
       {"fuzzing", {"-f", "--fuzzing"}, "perform a fuzzing run (default program mode)", 0},
       //{"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1}, TODO add arg again after refactor
       {"replay-patterns", {"-y", "--replay-patterns"}, "replays patterns given as comma-separated list of pattern IDs", 1},
       {"logfile", {"--logfile"}, "log to specified file", 1},
-      {"config", {"-c", "--config"}, "loads the specified config file (JSON) as DRAM address config.", 1},
       {"load-json", {"-j", "--load-json"}, "loads the specified JSON file generated in a previous fuzzer run, loads patterns given by --replay-patterns or determines the best ones", 1},
 
       // note that these two parameters don't require a value, their presence already equals a "true"
@@ -175,14 +174,6 @@ void handle_args(int argc, char **argv) {
   /**
    * mandatory parameters
    */
-  if (parsed_args.has_option("dimm-id")) {
-    program_args.dimm_id = parsed_args["dimm-id"].as<int>(0);
-    Logger::log_debug(format_string("Set --dimm-id: %ld", program_args.dimm_id));
-  } else {
-    Logger::log_error("Program argument '--dimm-id <integer>' is mandatory! Cannot continue.");
-    exit(EXIT_FAILURE);
-  }
-
   if (parsed_args.has_option("config")) {
       program_args.config = parsed_args["config"].as<std::string>("");
       Logger::log_debug(format_string("Set --config=%s", program_args.config.c_str()));

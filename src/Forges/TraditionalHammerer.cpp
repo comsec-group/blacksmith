@@ -82,7 +82,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
   }
 }
 
-[[maybe_unused]] void TraditionalHammerer::n_sided_hammer_experiment(Memory &memory, size_t reps, int acts) {
+[[maybe_unused]] void TraditionalHammerer::n_sided_hammer_experiment(BlacksmithConfig &config, Memory &memory, size_t reps, int acts) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<size_t> dist(0, std::numeric_limits<size_t>::max());
@@ -234,7 +234,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
   meta["start"] = start_ts;
   meta["end"] = get_timestamp_sec();
   meta["memory_config"] = DRAMAddr::get_memcfg_json();
-  meta["dimm_id"] = program_args.dimm_id;
+  meta["name"] = config.name;
   meta["acts_per_tref"] = acts;
   meta["seed"] = start_ts;
 
@@ -247,7 +247,8 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
 #endif
 }
 
-[[maybe_unused]] void TraditionalHammerer::n_sided_hammer(Memory &memory, BlacksmithConfig &config, int acts, long runtime_limit) {
+[[maybe_unused]] void
+TraditionalHammerer::n_sided_hammer(BlacksmithConfig &config, Memory &memory, int acts, long runtime_limit) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<size_t> dist(0, std::numeric_limits<size_t>::max());
@@ -309,7 +310,7 @@ void TraditionalHammerer::hammer_sync(std::vector<volatile char *> &aggressors, 
   }
 }
 
-void TraditionalHammerer::n_sided_hammer_experiment_frequencies(Memory &memory, BlacksmithConfig &config) {
+void TraditionalHammerer::n_sided_hammer_experiment_frequencies(BlacksmithConfig &config, Memory &memory) {
 #ifdef ENABLE_JSON
   nlohmann::json root;
   nlohmann::json all_results = nlohmann::json::array();
@@ -473,7 +474,7 @@ for (size_t r = 0; r < 10; ++ r) {
   meta["start"] = start_ts;
   meta["end"] = get_timestamp_sec();
   meta["memory_config"] = DRAMAddr::get_memcfg_json();
-  meta["dimm_id"] = program_args.dimm_id;
+  meta["name"] = config.name;
   meta["seed"] = start_ts;
 
   root["metadata"] = meta;

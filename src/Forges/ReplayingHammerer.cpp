@@ -208,7 +208,7 @@ void ReplayingHammerer::replay_patterns(const std::string& json_filename,
     meta["start"] = start_ts;
     meta["end"] = get_timestamp_sec();
     meta["memory_config"] = DRAMAddr::get_memcfg_json();
-    meta["dimm_id"] = program_args.dimm_id;
+    meta["name"] = config.name;
 
     nlohmann::json experiment;
     experiment["pattern_id"] = rep_data.pattern_id;
@@ -641,7 +641,7 @@ size_t ReplayingHammerer::replay_patterns_brief(std::vector<HammeringPattern> ha
   meta["end"] = std::chrono::duration_cast<std::chrono::seconds>(end.time_since_epoch()).count();
   meta["num_patterns"] = hammering_patterns.size();
   meta["memory_config"] = DRAMAddr::get_memcfg_json();
-  meta["dimm_id"] = program_args.dimm_id;
+  meta["name"] = config.name;
 
   nlohmann::json root;
   root["metadata"] = meta;
@@ -899,7 +899,7 @@ struct SweepSummary ReplayingHammerer::sweep_pattern(HammeringPattern &pattern, 
   return sweepsum;
 }
 
-ReplayingHammerer::ReplayingHammerer(Memory &mem) : mem(mem) { /* NOLINT */
+ReplayingHammerer::ReplayingHammerer(BlacksmithConfig &config, Memory &mem) : config(config), mem(mem) { /* NOLINT */
   std::random_device rd;
   gen = std::mt19937(rd());
 }

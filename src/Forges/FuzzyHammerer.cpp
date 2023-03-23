@@ -26,7 +26,7 @@ void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer
   FuzzingParameterSet fuzzing_params(acts);
   fuzzing_params.print_static_parameters();
 
-  ReplayingHammerer replaying_hammerer(memory);
+  ReplayingHammerer replaying_hammerer(config, memory);
 
 #ifdef ENABLE_JSON
   nlohmann::json arr = nlohmann::json::array();
@@ -141,7 +141,7 @@ void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer
   meta["end"] = get_timestamp_sec();
   meta["num_patterns"] = arr.size();
   meta["memory_config"] = DRAMAddr::get_memcfg_json();
-  meta["dimm_id"] = program_args.dimm_id;
+  meta["name"] = config.name;
 
   nlohmann::json root;
   root["metadata"] = meta;
