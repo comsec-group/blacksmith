@@ -54,7 +54,6 @@ size_t bitdef_to_bitstr(const BitDef &def) {
 
 MemConfiguration BlacksmithConfig::to_memconfig() {
   MemConfiguration out{};
-  out.IDENTIFIER = (CHANS(channels) | DIMMS(dimms) | RANKS(ranks) | BANKS(total_banks));
   size_t i = 0;
 
   assert(MTX_SIZE == bank_bits.size() + col_bits.size() + row_bits.size());
@@ -102,21 +101,4 @@ MemConfiguration BlacksmithConfig::to_memconfig() {
   }
   out.ADDR_MTX = addrMtx;
   return out;
-}
-
-std::vector<uint64_t> BlacksmithConfig::bank_rank_functions() {
-  std::vector<uint64_t> bank_rank_function(bank_bits.size());
-  int i = 0;
-  std::for_each(bank_bits.begin(), bank_bits.end(), [&i, &bank_rank_function](const BitDef &def) {
-    bank_rank_function[i++] = bitdef_to_bitstr(def);
-  });
-  return bank_rank_function;
-}
-
-uint64_t BlacksmithConfig::row_function() {
-  uint64_t row_function = 0;
-  std::for_each(row_bits.begin(), row_bits.end(), [&row_function](const BitDef &def) {
-    row_function |= bitdef_to_bitstr(def);
-  });
-  return row_function;
 }

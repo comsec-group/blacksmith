@@ -13,17 +13,9 @@ struct MemConfiguration; // forward declaration needed to break include cycle
 
 #endif
 
-#define CHANS(x) ((x) << (8UL * 3UL))
-#define DIMMS(x) ((x) << (8UL * 2UL))
-#define RANKS(x) ((x) << (8UL * 1UL))
-#define BANKS(x) ((x) << (8UL * 0UL))
-
 #define MTX_SIZE (30U)
 
-typedef size_t mem_config_t;
-
 struct MemConfiguration {
-  size_t IDENTIFIER;
   size_t BK_SHIFT;
   size_t BK_MASK;
   size_t ROW_SHIFT;
@@ -81,7 +73,6 @@ class DRAMAddr {
 
   static uint64_t get_row_increment();
 
-  static void initialize_configs();
 };
 
 #ifdef ENABLE_JSON

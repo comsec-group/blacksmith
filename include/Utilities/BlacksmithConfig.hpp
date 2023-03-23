@@ -73,9 +73,6 @@ public:
    * @param out a pointer to a MemConfiguration. `out' will be updated with bit definitions from BlacksmithConfig
    */
   MemConfiguration to_memconfig();
-  std::vector<uint64_t> bank_rank_functions();
-
-  uint64_t row_function();
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
                                  total_banks, max_rows, threshold, hammer_rounds, drama_rounds,
