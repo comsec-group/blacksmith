@@ -7,6 +7,8 @@
 
 #ifdef ENABLE_JSON
 #include <nlohmann/json.hpp>
+#include "Utilities/BlacksmithConfig.hpp"
+
 #endif
 
 #define CHANS(x) ((x) << (8UL * 3UL))
@@ -34,6 +36,7 @@ class DRAMAddr {
  private:
   // Class attributes
   static MemConfiguration MemConfig;
+  static BlacksmithConfig &Config;
   static size_t base_msb;
 
   [[nodiscard]] size_t linearize() const;
@@ -46,7 +49,7 @@ class DRAMAddr {
   // class methods
   static void set_base_msb(void *buff);
 
-  static void set_mem_config(const MemConfiguration &memConfiguration);
+  static void set_config(const BlacksmithConfig &config);
 
   // instance methods
   DRAMAddr(size_t bk, size_t r, size_t c);

@@ -10,8 +10,9 @@ void DRAMAddr::set_base_msb(void *buff) {
   base_msb = (size_t) buff & (~((size_t) (1ULL << 30UL) - 1UL));  // get higher order bits above the super page
 }
 
-void DRAMAddr::set_mem_config(const MemConfiguration &memConfiguration) {
-  MemConfig = memConfiguration;
+void DRAMAddr::set_config(const BlacksmithConfig &config) {
+  Config = config;
+  MemConfig = config.to_memconfig();
 }
 
 DRAMAddr::DRAMAddr() = default;
@@ -89,22 +90,12 @@ size_t DRAMAddr::base_msb;
 #ifdef ENABLE_JSON
 
 nlohmann::json DRAMAddr::get_memcfg_json() {
-  // TODO adapt
-  std::map<size_t, nlohmann::json> memcfg_to_json = {
-      {(CHANS(1UL) | DIMMS(1UL) | RANKS(1UL) | BANKS(16UL)),
-       nlohmann::json{
-           {"channels", 1},
-           {"dimms", 1},
-           {"ranks", 1},
-           {"banks", 16}}},
-      {(CHANS(1UL) | DIMMS(1UL) | RANKS(2UL) | BANKS(16UL)),
-       nlohmann::json{
-           {"channels", 1},
-           {"dimms", 1},
-           {"ranks", 2},
-           {"banks", 16}}}
-  };
-  return memcfg_to_json[MemConfig.IDENTIFIER];
+  nlohmann::json j;
+  j["channels"] = Config.channels;
+  j["dimms"] = Config.dimms;
+  j["ranks"] = Config.ranks;
+  j["banks"] = Config.total_banks;
+  return j;
 }
 
 #endif

@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   Logger::log_info("loading dram config");
   BlacksmithConfig config = BlacksmithConfig::from_jsonfile(program_args.config);
   Logger::log_info("Config parse success");
-  DRAMAddr::set_mem_config(config.to_memconfig());
+  DRAMAddr::set_config(config.to_memconfig());
 
   // prints the current git commit and some program metadata
   Logger::log_metadata(GIT_COMMIT_HASH, config, program_args.runtime_limit);
