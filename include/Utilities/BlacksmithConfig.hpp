@@ -72,7 +72,7 @@ public:
    * @param config a reference to a BlacksmithConfig
    * @param out a pointer to a MemConfiguration. `out' will be updated with bit definitions from BlacksmithConfig
    */
-  MemConfiguration to_memconfig() const;
+  MemConfiguration to_memconfig();
   std::vector<uint64_t> bank_rank_functions();
 
   uint64_t row_function();
