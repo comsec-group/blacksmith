@@ -25,8 +25,8 @@ void Memory::allocate_memory() {
     target = (volatile char*) mapped_target;
   } else {
     // allocate memory using huge pages
-    assert(posix_memalign((void **) &target, mem_size, mem_size)==0);
-    assert(madvise((void *) target, mem_size, MADV_HUGEPAGE)==0);
+    assert(posix_memalign((void **) &target, config.memory_size, config.memory_size)==0);
+    assert(madvise((void *) target, config.memory_size, MADV_HUGEPAGE)==0);
     memset((char *) target, 'A', config.memory_size);
     // for khugepaged
     Logger::log_info("Waiting for khugepaged.");
