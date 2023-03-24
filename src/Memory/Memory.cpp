@@ -27,7 +27,7 @@ void Memory::allocate_memory() {
     // allocate memory using huge pages
     assert(posix_memalign((void **) &target, mem_size, mem_size)==0);
     assert(madvise((void *) target, mem_size, MADV_HUGEPAGE)==0);
-    memset((char *) target, 'A', mem_size);
+    memset((char *) target, 'A', config.memory_size);
     // for khugepaged
     Logger::log_info("Waiting for khugepaged.");
     sleep(10);
