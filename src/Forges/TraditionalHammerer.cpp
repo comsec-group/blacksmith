@@ -428,7 +428,7 @@ for (size_t r = 0; r < 10; ++ r) {
     hammer_flush_early(aggressors, 8192*32);
 //    hammer(aggressors, 5000000/aggressors.size());
 //    hammer(aggressors, 8192*32);
-//    hammer_sync(aggressors, program_args.acts_per_ref,
+//    hammer_sync(aggressors, program_args.acts_per_trefi,
 //        (volatile char *) dmy2.add(0, 111, 0).to_virt(),
 //        (volatile char *) dmy2.add(0, 113, 0).to_virt());
 

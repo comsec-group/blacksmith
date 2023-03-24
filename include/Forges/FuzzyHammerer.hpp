@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 by ETH Zurich.
+ * Licensed under the MIT License, see LICENSE file for more details.
+ */
+
 #ifndef BLACKSMITH_SRC_FORGES_FUZZYHAMMERER_HPP_
 #define BLACKSMITH_SRC_FORGES_FUZZYHAMMERER_HPP_
 
@@ -28,12 +33,6 @@ class FuzzyHammerer {
                                                 int acts, unsigned long runtime_limit, size_t probes_per_pattern,
                                                 bool sweep_best_pattern);
 
-  static void generate_pattern_for_ARM(BlacksmithConfig &config,
-                                       int acts,
-                                       int *rows_to_access,
-                                       int max_accesses,
-                                       size_t probes_per_pattern);
-
   static void test_location_dependence(ReplayingHammerer &rh, HammeringPattern &pattern);
 
   static void probe_mapping_and_scan(PatternAddressMapper &mapper, Memory &memory,
@@ -41,6 +40,12 @@ class FuzzyHammerer {
 
   static void log_overall_statistics(size_t cur_round, const std::string &best_mapping_id,
                                      size_t best_mapping_num_bitflips, size_t num_effective_patterns);
+
+  static void generate_pattern_for_ARM(BlacksmithConfig &config,
+                                       int acts,
+                                       int *rows_to_access,
+                                       int max_accesses,
+                                       size_t probes_per_pattern);
 };
 
 #endif //BLACKSMITH_SRC_FORGES_FUZZYHAMMERER_HPP_

@@ -2,7 +2,8 @@
 
 [![Academic Code](https://img.shields.io/badge/Origin-Academic%20Code-C1ACA0.svg?style=flat)]() [![Language Badge](https://img.shields.io/badge/Made%20with-C/C++-blue.svg)](https://isocpp.org/std/the-standard) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![contributions welcome](https://img.shields.io/badge/Contributions-welcome-lightgray.svg?style=flat)]()
 
-[![Preprint: arXiv](https://img.shields.io/badge/Preprint-COMSEC-orange.svg)](https://comsec.ethz.ch/wp-content/files/blacksmith_sp22.pdf) [![Paper](https://img.shields.io/badge/To%20appear%20in-IEEE%20S&P%20'22-brightgreen.svg)](https://www.ieee-security.org/TC/SP2022/program-papers.html) [![Funding](https://img.shields.io/badge/Grant-NCCR%20Automation%20(51NF40180545)-red.svg)](https://nccr-automation.ch/)
+
+[![DOI](https://img.shields.io/badge/DOI-20.500.11850/525008-yellow.svg)](https://www.research-collection.ethz.ch/handle/20.500.11850/525013) [![Preprint](https://img.shields.io/badge/Preprint-ETH%20Research%20Collection-orange.svg)](https://www.research-collection.ethz.ch/handle/20.500.11850/525008) [![Paper](https://img.shields.io/badge/To%20appear%20in-IEEE%20S&P%20'22-brightgreen.svg)](https://www.ieee-security.org/TC/SP2022/program-papers.html) [![Funding](https://img.shields.io/badge/Grant-NCCR%20Automation%20(51NF40180545)-red.svg)](https://nccr-automation.ch/)
 
 This repository provides the code accompanying the paper _[Blacksmith: Scalable Rowhammering in the Frequency Domain](https://comsec.ethz.ch/wp-content/files/blacksmith_sp22.pdf)_ that is to appear in the IEEE conference Security & Privacy (S&P) 2022.
 
@@ -113,16 +114,30 @@ as well as reverse-engineered address mappings for a Intel i5-6400 CPU with a si
 
 ## Citing our Work
 
-To cite Blacksmith in academic papers, please use the following BibTeX entry:
+To cite the Blacksmith **paper** in other academic papers, please use the following BibTeX entry:
 
 ```
-@inproceedings{jattke2021blacksmith,
+@inproceedings{20.500.11850/525008,
   title = {{{BLACKSMITH}}: Rowhammering in the {{Frequency Domain}}},
   shorttitle = {Blacksmith},
   booktitle = {{{IEEE S}}\&{{P}} '22},
   author = {Jattke, Patrick and {van der Veen}, Victor and Frigo, Pietro and Gunter, Stijn and Razavi, Kaveh},
-  year = {2021},
-  month = nov,
+  year = {2022-05},
   note = {\url{https://comsec.ethz.ch/wp-content/files/blacksmith_sp22.pdf}}
+  doi = {20.500.11850/525008},
+}
+```
+
+To cite the Blacksmith **software** in academic papers, please use the following BibTeX entry:
+
+```
+@MISC{20.500.11850/525013,
+    title = {{{BLACKSMITH}}: Rowhammering in the {{Frequency Domain}}},
+	copyright = {MIT License},
+	year = {2022-05},
+	author = {Jattke, Patrick and van der Veen, Victor and Frigo, Pietro and Gunter, Stijn and Razavi, Kaveh},
+	language = {en},
+    note = {\url{https://github.com/comsec-group/blacksmith}}
+    doi = {20.500.11850/525013}
 }
 ```

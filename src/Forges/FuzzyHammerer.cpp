@@ -107,10 +107,10 @@ void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer
     // dynamically change num acts per tREF after every 100 patterns; this is to avoid that we made a bad choice at the
     // beginning and then get stuck with that value
     // if the user provided a fixed num acts per tREF value via the program arguments, then we will not change it
-    if (cnt_generated_patterns%100==0 && program_args.acts_per_ref != 0) {
+    if (cnt_generated_patterns%100==0 && !program_args.fixed_acts_per_ref) {
       auto old_nacts = fuzzing_params.get_num_activations_per_t_refi();
       // repeat measuring the number of possible activations per tREF as it might be that the current value is not optimal
-      fuzzing_params.set_num_activations_per_t_refi(static_cast<int>(dramAnalyzer.count_acts_per_ref()*2));
+      fuzzing_params.set_num_activations_per_t_refi(static_cast<int>(dramAnalyzer.count_acts_per_trefi()));
       Logger::log_info(
           format_string("Recomputed number of ACTs per tREF (old: %d, new: %d).",
               old_nacts,

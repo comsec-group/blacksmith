@@ -79,8 +79,10 @@ size_t Memory::check_memory(PatternAddressMapper &mapping, bool reproducibility_
 
   size_t sum_found_bitflips = 0;
   for (const auto &victim_row : victim_rows) {
+    auto victim_dram_addr = DRAMAddr((char*)victim_row);
+    victim_dram_addr.add_inplace(0, 1, 0);
     sum_found_bitflips += check_memory_internal(mapping, victim_row,
-        (volatile char *) ((uint64_t)victim_row+DRAMAddr::get_row_increment()), reproducibility_mode, verbose);
+        (volatile char *) victim_dram_addr.to_virt(), reproducibility_mode, verbose);
   }
   return sum_found_bitflips;
 }
@@ -106,12 +108,6 @@ size_t Memory::check_memory_internal(PatternAddressMapper &mapping,
     Logger::log_data(format_string("End addr.: %s", DRAMAddr((void *) end).to_string().c_str()));
     return found_bitflips;
   }
-
-  auto check_offset = 5;
-
-  auto row_increment = DRAMAddr::get_row_increment();
-  start -= row_increment*check_offset;
-  end += row_increment*check_offset;
 
   auto start_offset = (uint64_t) (start - start_address);
 

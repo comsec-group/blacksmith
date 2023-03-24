@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 by ETH Zurich.
+ * Licensed under the MIT License, see LICENSE file for more details.
+ */
+
 #ifndef DRAMANALYZER
 #define DRAMANALYZER
 
@@ -41,8 +46,8 @@ class DramAnalyzer {
     return (int)((sum) / rounds);
   }
 
-  /// Determine the number of possible total activations to an aggressor pair within a refresh interval.
-  size_t count_acts_per_ref();
+  /// Determine the number of possible activations within a refresh interval.
+  size_t count_acts_per_trefi();
 };
 
 #endif /* DRAMANALYZER */

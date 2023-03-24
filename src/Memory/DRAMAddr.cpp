@@ -100,10 +100,6 @@ nlohmann::json DRAMAddr::get_memcfg_json() {
 
 #endif
 
-uint64_t DRAMAddr::get_row_increment() {
-  return MemConfig.DRAM_MTX[1];
-}
-
 #ifdef ENABLE_JSON
 
 void to_json(nlohmann::json &j, const DRAMAddr &p) {

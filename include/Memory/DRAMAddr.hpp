@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 by ETH Zurich.
+ * Licensed under the MIT License, see LICENSE file for more details.
+ */
+
 #ifndef DRAMADDR
 #define DRAMADDR
 
@@ -70,8 +75,6 @@ class DRAMAddr {
 #ifdef ENABLE_JSON
   static nlohmann::json get_memcfg_json();
 #endif
-
-  static uint64_t get_row_increment();
 
 };
 
