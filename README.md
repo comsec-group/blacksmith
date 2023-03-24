@@ -89,7 +89,33 @@ Except for the parameters `--dimm-id` and `--ranks` all other parameters are opt
 
 The default values of the parameters can be found in the [`struct ProgramArguments`](include/Blacksmith.hpp#L8).
 
-## Sample JSON Configuration
+## JSON Configuration
+
+Blacksmith is configured using a JSON config file. Provide a path to the config file using the `--config` flag. 
+This config file needs the following keys:
+
+| Key           | Type                 | Description                                                                                                                                                            | Example                                           |
+|---------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| name          | string               | A user-defined name identifying this config                                                                                                                            | "esprimo-d757_i5-6400_gskill-F4-2133C15-16GIS"    |
+| channels      | uint                 | Number of active channels in the system                                                                                                                                | 1                                                 |
+| dimms         | uint                 | Number of active DIMMs in the system                                                                                                                                   | 1                                                 |
+| memory_size   | uint                 | Number of bytes to be allocated by Blacksmith                                                                                                                          | 1073741824                                        |
+| ranks         | uint                 | Number of ranks on the DIMM                                                                                                                                            | 2                                                 |
+| total_banks   | uint                 | Number of *total* banks in the system, i.e., #banks * #ranks                                                                                                           | 32                                                |
+| max_rows      | uint                 | Maximum number of aggressor rows                                                                                                                                       | 30                                                |
+| threshold     | uint                 | Threshold to distinguish between row buffer miss (t > `threshold`) and row buffer hit (t < `threshhold`).                                                              | 400                                               |
+| hammer_rounds | uint                 | Number of rounds to hammer                                                                                                                                             | 1000000                                           |
+| drama_rounds  | uint                 | Number of rounds to measure cache hit/miss latency                                                                                                                     | 1000                                              |
+| row_bits      | [uint &#124; [uint]] | Row Bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix    | [29,28,27,26,25,24,23,22,21,20,19,18]             |
+| col_bits      | [uint &#124; [uint]] | Column bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix | [12,11,10,9,8,7,6,5,4,3,2,1,0]                    |
+| bank_bits     | [uint &#124; [uint]] | Bank bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix   | [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]] |
+
+The values for keys `row_bits`, `col_bits`, and `bank_bits` can be reversed-engineered by using a tool such as DRAMA.
+The `threshold`  can be determined experimentally using the `determineConflictThresh`, which also expects a `--config`
+parameter pointing to a JSON config file. Here, `threshold` is not required.
+For the `blacksmith` binary, all keys are required.
+
+### Sample JSON Configuration
 
 The following configuration contains the default values previously defined in [`GlobalDefines.hpp`](include/GlobalDefines.hpp)
 as well as reverse-engineered address mappings for a Intel i5-6400 CPU with a single G.SKILL F4-2133C15-16GIS DIMM.
