@@ -12,9 +12,11 @@ size_t FuzzyHammerer::cnt_generated_patterns = 0UL;
 std::unordered_map<std::string, std::unordered_map<std::string, int>> FuzzyHammerer::map_pattern_mappings_bitflips;
 HammeringPattern FuzzyHammerer::hammering_pattern = HammeringPattern(); /* NOLINT */
 
-void FuzzyHammerer::n_sided_frequency_based_hammering(DramAnalyzer &dramAnalyzer, Memory &memory, BlacksmithConfig &config,
-                                                      int acts, unsigned long runtime_limit,
-                                                      const size_t probes_per_pattern, bool sweep_best_pattern) {
+void
+FuzzyHammerer::n_sided_frequency_based_hammering(BlacksmithConfig &config, DramAnalyzer &dramAnalyzer, Memory &memory,
+                                                 int acts,
+                                                 unsigned long runtime_limit, size_t probes_per_pattern,
+                                                 bool sweep_best_pattern) {
   std::mt19937 gen = std::mt19937(std::random_device()());
 
   Logger::log_info(

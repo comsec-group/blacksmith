@@ -20,7 +20,7 @@ class DramAnalyzer {
   volatile char *start_address;
 
  public:
-  explicit DramAnalyzer(volatile char *target, BlacksmithConfig &config);
+  explicit DramAnalyzer(BlacksmithConfig &config, volatile char *target);
 
   /// Measures the time between accessing two addresses.
   static int inline measure_time(volatile char *a1, volatile char *a2, size_t rounds) {

@@ -3,7 +3,7 @@
 #include <cassert>
 #include <unordered_set>
 
-DramAnalyzer::DramAnalyzer(volatile char *target, BlacksmithConfig &config) :
+DramAnalyzer::DramAnalyzer(BlacksmithConfig &config, volatile char *target) :
   config(config), start_address(target) {}
 
 size_t DramAnalyzer::count_acts_per_trefi() {

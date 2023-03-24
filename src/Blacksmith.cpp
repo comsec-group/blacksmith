@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 
   // find address sets that create bank conflicts
   //Logger::log_info("finding bank conflicts...");
-  DramAnalyzer dram_analyzer(memory.get_starting_address(), config);
+  DramAnalyzer dram_analyzer(config, memory.get_starting_address());
   //dram_analyzer.find_bank_conflicts();
 
   // initialize the DRAMAddr class to load the proper memory configuration
@@ -101,8 +101,11 @@ int main(int argc, char **argv) {
       replayer.replay_patterns(program_args.load_json_filename, program_args.pattern_ids);
     }
   } else if (program_args.do_fuzzing && program_args.use_synchronization) {
-    FuzzyHammerer::n_sided_frequency_based_hammering(dram_analyzer, memory, config, static_cast<int>(program_args.acts_per_trefi), program_args.runtime_limit,
-        program_args.num_address_mappings_per_pattern, program_args.sweeping);
+    FuzzyHammerer::n_sided_frequency_based_hammering(config, dram_analyzer, memory,
+                                                     static_cast<int>(program_args.acts_per_trefi),
+                                                     program_args.runtime_limit,
+                                                     program_args.num_address_mappings_per_pattern,
+                                                     program_args.sweeping);
   } else if (!program_args.do_fuzzing) {
 //    TraditionalHammerer::n_sided_hammer(memory, program_args.acts_per_trefi, program_args.runtime_limit);
 //    TraditionalHammerer::n_sided_hammer_experiment(memory, program_args.acts_per_trefi);
