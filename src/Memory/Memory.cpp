@@ -3,8 +3,8 @@
 #include <sys/mman.h>
 
 /// Allocates a MEM_SIZE bytes of memory by using super or huge pages.
-void Memory::allocate_memory(uint64_t mem_size) {
-  this->size = mem_size;
+void Memory::allocate_memory() {
+  this->size = config.memory_size;
   volatile char *target = nullptr;
   FILE *fp;
 
@@ -16,7 +16,7 @@ void Memory::allocate_memory(uint64_t mem_size) {
       Logger::log_data(std::strerror(errno));
       exit(EXIT_FAILURE);
     }
-    auto mapped_target = mmap((void *) start_address, mem_size, PROT_READ | PROT_WRITE,
+    auto mapped_target = mmap((void *) start_address, config.memory_size, PROT_READ | PROT_WRITE,
         MAP_SHARED | MAP_ANONYMOUS | MAP_HUGETLB | (30UL << MAP_HUGE_SHIFT), fileno(fp), 0);
     if (mapped_target==MAP_FAILED) {
       perror("mmap");

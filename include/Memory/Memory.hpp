@@ -46,7 +46,7 @@ class Memory {
 
   ~Memory();
 
-  void allocate_memory(uint64_t mem_size);
+  void allocate_memory();
 
   void initialize(DATA_PATTERN data_pattern);
 
