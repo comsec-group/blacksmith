@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
   Memory memory(config, true);
   memory.allocate_memory();
   memset((void*)memory.get_starting_address(), 0, memory.get_size());
-  DramAnalyzer dram_analyzer(memory.get_starting_address(), config);
+  DramAnalyzer dram_analyzer(config, memory.get_starting_address());
   Logger::log_info("Loading DRAM config");
   // initialize the DRAMAddr class to load the proper memory configuration
   DRAMAddr::set_config(config);
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
   outFile.open(program_args.output);
   outFile << "activations" << std::endl;
   for( int i = 0; i < 10;i++) {
-    outFile << dram_analyzer.count_acts_per_ref((volatile char*)addr1.to_virt(),(volatile char*)addr2.to_virt())*2 << std::endl;
+    outFile << DramAnalyzer::count_acts_per_trefi((volatile char*)addr1.to_virt(),(volatile char*)addr2.to_virt()) << std::endl;
   }
   Logger::log_info("Done, goodbye!");
 }
