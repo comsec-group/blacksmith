@@ -38,6 +38,7 @@ class Memory {
                                const volatile char *end, bool reproducibility_mode, bool verbose);
 
  public:
+  [[nodiscard]] uint64_t get_size() const;
 
   // the flipped bits detected during the last call to check_memory
   std::vector<BitFlip> flipped_bits;

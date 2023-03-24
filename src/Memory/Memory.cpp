@@ -231,4 +231,6 @@ std::string Memory::get_flipped_rows_text_repr() {
   return ss.str();
 }
 
-
+uint64_t Memory::get_size() const {
+  return size;
+}
