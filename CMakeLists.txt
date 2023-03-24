@@ -172,6 +172,7 @@ target_link_libraries(
         determineConflictThresh
         PRIVATE
         bs
+        argagg
 )
 
 add_executable(
@@ -183,6 +184,7 @@ target_link_libraries(
         determineActsPerRef
         PRIVATE
         bs
+        argagg
 )
 
 add_executable(
@@ -194,6 +196,7 @@ target_link_libraries(
         checkAddrFunction
         PRIVATE
         bs
+        argagg
 )
 # === CLEANUP ==================================================================
 
