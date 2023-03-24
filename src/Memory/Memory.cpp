@@ -201,7 +201,7 @@ size_t Memory::check_memory_internal(PatternAddressMapper &mapping,
   return found_bitflips;
 }
 
-Memory::Memory(bool use_superpage, BlacksmithConfig &config) : config(config), size(0), superpage(use_superpage) {
+Memory::Memory(BlacksmithConfig &config, bool use_superpage) : config(config), size(0), superpage(use_superpage) {
 }
 
 Memory::~Memory() {

@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 
   // allocate a large bulk of contiguous memory
   Logger::log_info("allocating memory...");
-  Memory memory(true, config);
+  Memory memory(config, true);
   memory.allocate_memory();
 
   // find address sets that create bank conflicts

@@ -42,7 +42,7 @@ class Memory {
   // the flipped bits detected during the last call to check_memory
   std::vector<BitFlip> flipped_bits;
 
-  Memory(bool use_superpage, BlacksmithConfig &config);
+  Memory(BlacksmithConfig &config, bool use_superpage);
 
   ~Memory();
 
