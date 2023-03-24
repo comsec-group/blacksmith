@@ -48,6 +48,8 @@ class DramAnalyzer {
 
   /// Determine the number of possible activations within a refresh interval.
   size_t count_acts_per_trefi();
+
+  static size_t count_acts_per_trefi(volatile char *a, volatile char*b);
 };
 
 #endif /* DRAMANALYZER */
