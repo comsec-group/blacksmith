@@ -58,7 +58,7 @@ public:
   uint64_t ranks;
   uint64_t total_banks;
   uint64_t max_rows;  // maximum number of aggressor rows
-  uint8_t threshold;  // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
+  uint64_t threshold;  // threshold to distinguish between cache miss (t > THRESH) and cache hit (t < THRESH)
   size_t hammer_rounds;  // number of rounds to hammer
   size_t drama_rounds;  // number of rounds to measure cache hit/miss latency
   uint64_t memory_size;  // memory size in bytes to allocate
