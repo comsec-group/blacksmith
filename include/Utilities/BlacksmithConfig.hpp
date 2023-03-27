@@ -11,12 +11,11 @@ class BlacksmithConfig; // forward declaration needed to break include cycle
 #include <vector>
 #include <variant>
 #include "Memory/DRAMAddr.hpp"
+#include "nlohmann/json.hpp"
 
 typedef std::variant<uint64_t, std::vector<uint64_t>> BitDef;
 
-size_t bitdef_to_bitstr(const BitDef &def);
-
-// (de-)serialize std::variant
+// (de-)serialize std::variant, required for BitDef
 template<typename T, typename... Ts>
 void variant_from_json(const nlohmann::json &j, std::variant<Ts...> &data) {
   try {

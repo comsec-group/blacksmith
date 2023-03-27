@@ -37,7 +37,7 @@ BlacksmithConfig BlacksmithConfig::from_jsonfile(const std::string &filepath) {
  * @param def a BitDef
  * @return the bit string represented by `def'
  */
-size_t bitdef_to_bitstr(const BitDef &def) {
+static size_t bitdef_to_bitstr(const BitDef &def) {
   size_t res = 0;
   std::visit(overloaded{
       [&res](const uint64_t &bit) {
