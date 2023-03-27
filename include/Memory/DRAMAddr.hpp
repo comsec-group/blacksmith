@@ -14,9 +14,9 @@ struct MemConfiguration; // forward declaration needed to break include cycle
 
 #ifdef ENABLE_JSON
 #include <nlohmann/json.hpp>
-#include "Utilities/BlacksmithConfig.hpp"
-
 #endif
+
+#include "Utilities/BlacksmithConfig.hpp"
 
 #define MTX_SIZE (30U)
 

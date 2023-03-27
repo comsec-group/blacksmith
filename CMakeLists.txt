@@ -4,7 +4,7 @@ project(blacksmith VERSION 0.0.1 LANGUAGES CXX)
 # === OPTIONS ==================================================================
 
 set(
-        BLACKSMITH_ENABLE_JSON
+        BLACKSMITH_ENABLE_JSON_EXPORT
         ON
         CACHE BOOL
         "Use the nlohmann/json library to export JSON-formatted fuzzing data."
@@ -96,13 +96,13 @@ target_compile_options(
         -Wno-format-security
 )
 
-if (BLACKSMITH_ENABLE_JSON)
-    target_link_libraries(
-            bs
-            PUBLIC
-            nlohmann_json::nlohmann_json
-    )
+target_link_libraries(
+        bs
+        PUBLIC
+        nlohmann_json::nlohmann_json
+)
 
+if (BLACKSMITH_ENABLE_JSON_EXPORT)
     target_compile_definitions(
             bs
             PUBLIC
@@ -200,5 +200,5 @@ target_link_libraries(
 )
 # === CLEANUP ==================================================================
 
-unset(BLACKSMITH_ENABLE_JSON CACHE)
+unset(BLACKSMITH_ENABLE_JSON_EXPORT CACHE)
 unset(BLACKSMITH_ENABLE_JITTING CACHE)
