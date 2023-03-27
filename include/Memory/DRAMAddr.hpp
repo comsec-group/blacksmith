@@ -72,6 +72,15 @@ class DRAMAddr {
 
   void add_inplace(size_t bank_increment, size_t row_increment, size_t column_increment);
 
+  static int get_row_count() {
+    if (Config == NULL) {
+      throw std::logic_error("Config not yet initialized");
+    }
+
+    size_t row_count = 1ULL << __builtin_popcountl(MemConfig.ROW_MASK);
+    return (int)row_count;
+  }
+
 #ifdef ENABLE_JSON
   static nlohmann::json get_memcfg_json();
 #endif

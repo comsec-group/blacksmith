@@ -7,6 +7,7 @@
 #endif
 
 #include "GlobalDefines.hpp"
+#include "Memory/DRAMAddr.hpp"
 
 FuzzingParameterSet::FuzzingParameterSet(int measured_num_acts_per_ref) : /* NOLINT */
     flushing_strategy(FLUSHING_STRATEGY::EARLIEST_POSSIBLE),
@@ -157,7 +158,8 @@ void FuzzingParameterSet::randomize_parameters(bool print) {
   //    num_activations_per_tREFI ≈100                       => 8k * 100 ≈ 8M activations and we hammer for 5M acts.
   hammering_total_num_activations = 5000000;
 
-  max_row_no = 8192;
+  max_row_no = DRAMAddr::get_row_count();
+  Logger::log_info(format_string("FuzzingParameter::randomize_parameters: set max_row_no to %lu\n",max_row_no));
 
   // █████████ SEMI-DYNAMIC FUZZING PARAMETERS ████████████████████████████████████████████████████
   // are only randomized once when calling this function
