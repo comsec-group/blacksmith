@@ -34,8 +34,8 @@ class DramAnalyzer {
   std::vector<std::tuple<uint64_t,uint64_t,uint64_t>> measure_timings(size_t sample_size);
 
   /// Measures the time between accessing two addresses.
-  static int inline measure_time(volatile char *a1, volatile char *a2, size_t rounds) {
-    uint64_t before, after,sum,delta;
+  static inline uint64_t measure_time(volatile char *a1, volatile char *a2, size_t rounds) {
+    uint64_t before, after, sum, delta;
     sum = 0;
 
     for (size_t i = 0; i < rounds; i++) {
@@ -54,7 +54,7 @@ class DramAnalyzer {
         clflushopt(a1);
         clflushopt(a2);
     }
-    return (int)((sum) / rounds);
+    return sum / rounds;
   }
 
   /// Determine the number of possible activations within a refresh interval.
