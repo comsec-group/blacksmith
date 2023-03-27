@@ -72,6 +72,13 @@ class DRAMAddr {
 
   void add_inplace(size_t bank_increment, size_t row_increment, size_t column_increment);
 
+  static size_t get_bank_count() {
+    if (Config == NULL) {
+      throw std::logic_error("Config not yet initialized");
+    }
+    return 1ULL << __builtin_popcountl(MemConfig.BK_MASK);
+  }
+
   static int get_row_count() {
     if (Config == NULL) {
       throw std::logic_error("Config not yet initialized");
