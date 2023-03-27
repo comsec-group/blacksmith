@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   Logger::log_info(format_string("Writing measurements to %s", program_args.output.c_str()));
   std::ofstream outFile;
   outFile.open(program_args.output);
-  outFile << "addr1,addr2,timing" << std::endl;
+  outFile << "bank,rowA,rowB,addrA,addrB,timing" << std::endl;
   for(size_t bank = 0; bank < bank_count; bank++) {
     //loop over all row combinations
     for(size_t rowA = 0; rowA < row_count; rowA++) {
@@ -55,7 +55,10 @@ int main(int argc, char **argv) {
         auto addrA = DRAMAddr(bank,rowA,0);
         auto addrB = DRAMAddr(bank,rowB,0);
         auto timing = DramAnalyzer::measure_time((volatile char*)addrA.to_virt(),(volatile char*)addrB.to_virt(), config.drama_rounds);
-        outFile << reinterpret_cast<std::uintptr_t>(addrA.to_virt()) << ","
+        outFile << bank << ","
+                << rowA << ","
+                << rowB << ","
+                << reinterpret_cast<std::uintptr_t>(addrA.to_virt()) << ","
                 << reinterpret_cast<std::uintptr_t>(addrB.to_virt()) << ","
                 << timing << std::endl;
         if(timing < config.threshold) {
