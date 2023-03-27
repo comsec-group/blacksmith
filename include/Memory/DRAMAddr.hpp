@@ -79,13 +79,13 @@ class DRAMAddr {
     return 1ULL << __builtin_popcountl(MemConfig.BK_MASK);
   }
 
-  static int get_row_count() {
+  static size_t get_row_count() {
     if (Config == NULL) {
       throw std::logic_error("Config not yet initialized");
     }
 
     size_t row_count = 1ULL << __builtin_popcountl(MemConfig.ROW_MASK);
-    return (int)row_count;
+    return row_count;
   }
 
 #ifdef ENABLE_JSON
