@@ -11,7 +11,6 @@ DramAnalyzer::DramAnalyzer(BlacksmithConfig &config, volatile char *target) :
 }
 
 size_t DramAnalyzer::count_acts_per_trefi() {
-  const int ROW_LENGTH = 64;
   DRAMAddr a((void*)start_address);
   DRAMAddr b = a.add(0, 1, 0);
   if(!(a.bank == b.bank && a.row != b.row)) {
