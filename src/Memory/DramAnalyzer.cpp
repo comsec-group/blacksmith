@@ -13,13 +13,8 @@ DramAnalyzer::DramAnalyzer(BlacksmithConfig &config, volatile char *target) :
 size_t DramAnalyzer::count_acts_per_trefi() {
   const int ROW_LENGTH = 64;
   DRAMAddr a((void*)start_address);
-  DRAMAddr b;
-  bool did_find_same_bank_diff_rows = false;
-  for (size_t offset = 0; !did_find_same_bank_diff_rows && offset < config.memory_size; offset += ROW_LENGTH) {
-    b = DRAMAddr((void*)(start_address + offset));
-    did_find_same_bank_diff_rows = a.bank == b.bank && a.row != b.row;
-  }
-  if(!did_find_same_bank_diff_rows) {
+  DRAMAddr b = a.add(0, 1, 0);
+  if(!(a.bank == b.bank && a.row != b.row)) {
     Logger::log_error("Failed to find two differing-row addresses on the same bank. Is your config correct?");
     exit(1);
   }
