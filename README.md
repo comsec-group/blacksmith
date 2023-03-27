@@ -91,8 +91,12 @@ The default values of the parameters can be found in the [`struct ProgramArgumen
 
 ## JSON Configuration
 
-Blacksmith is configured using a JSON config file. Provide a path to the config file using the `--config` flag. 
-This config file needs the following keys:
+### Overview
+
+Blacksmith uses a JSON config file for configuration. To provide a path to the config file, use the `--config` flag. 
+All keys in the config file are required for the `blacksmith` binary.
+
+### Keys
 
 | Key           | Type                 | Description                                                                                                                                                            | Example                                           |
 |---------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
@@ -111,9 +115,6 @@ This config file needs the following keys:
 | bank_bits     | [uint &#124; [uint]] | Bank bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix   | [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]] |
 
 The values for keys `row_bits`, `col_bits`, and `bank_bits` can be reversed-engineered by using a tool such as DRAMA.
-The `threshold`  can be determined experimentally using the `determineConflictThresh`, which also expects a `--config`
-parameter pointing to a JSON config file. Here, `threshold` is not required.
-For the `blacksmith` binary, all keys are required.
 
 ### Sample JSON Configuration
 
@@ -137,6 +138,26 @@ as well as reverse-engineered address mappings for a Intel i5-6400 CPU with a si
   "bank_bits": [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]]
 }
 ```
+
+## Additional Tools
+
+### determineConflictThreshold
+The determineConflictThreshold tool helps experimentally determine the value for threshold. Pass a JSON config file 
+using the `--config` parameter. Set threshold to 0 in the JSON config file. After analysis of conflict threshold data,
+update the threshold value in the config file.
+
+### checkAddrFunction
+The `checkAddrFunction` tool can be used to verify the correctness of reverse-engineered memory mapping. It measures
+the timing between all rows on all banks for a given JSON configuration passed with the --config parameter. If the configuration
+is correct, all accesses should take at least threshold cycles. If the tool measures less than threshold cycles
+between row access, an error is logged. All measurements are logged to the output file specified by --output for
+further analysis.
+
+### determineActsPerRef
+The `determineActsPerRef` tool helps in determining the number of row activations between two TRR refresh instructions.
+This number of activations is required while fuzzing using `blacksmith`. You can pass it to `blacksmith`
+using the optional `--acts-per-ref` argument. If `--acts-per-ref` is omitted, `blacksmith` periodically determines the 
+activations per refresh cycle while fuzzing.
 
 ## Citing our Work
 

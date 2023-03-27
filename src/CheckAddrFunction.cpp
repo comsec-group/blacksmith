@@ -58,6 +58,14 @@ int main(int argc, char **argv) {
         outFile << reinterpret_cast<std::uintptr_t>(addrA.to_virt()) << ","
                 << reinterpret_cast<std::uintptr_t>(addrB.to_virt()) << ","
                 << timing << std::endl;
+        if(timing < config.threshold) {
+          Logger::log_error(format_string("Measured %lu for addresses %lu (bank %lu, row %lu) "
+                                          "and %lu (bank %lu, row %lu), which is below the row conflict threshold of %lu",
+                                          timing,
+                                          reinterpret_cast<std::uintptr_t>(addrA.to_virt()), bank, rowA,
+                                          reinterpret_cast<std::uintptr_t>(addrB.to_virt()), bank, rowB,
+                                          config.threshold));
+        }
       }
     }
   }
