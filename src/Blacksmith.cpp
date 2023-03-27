@@ -26,9 +26,8 @@ int main(int argc, char **argv) {
   Logger::initialize(program_args.logfile);
 
   // load config
-  Logger::log_info("loading dram config");
+  Logger::log_debug("Loading DRAM config");
   BlacksmithConfig config = BlacksmithConfig::from_jsonfile(program_args.config);
-  Logger::log_info("Config parse success");
   DRAMAddr::set_config(config);
 
   // prints the current git commit and some program metadata
@@ -39,24 +38,21 @@ int main(int argc, char **argv) {
   if (ret!=0) Logger::log_error("Instruction setpriority failed.");
 
   // allocate a large bulk of contiguous memory
-  Logger::log_info("allocating memory...");
+  Logger::log_debug("Allocating memory...");
   Memory memory(config, true);
   memory.allocate_memory();
 
   // find address sets that create bank conflicts
-  //Logger::log_info("finding bank conflicts...");
   DramAnalyzer dram_analyzer(config, memory.get_starting_address());
-  //dram_analyzer.find_bank_conflicts();
 
   // initialize the DRAMAddr class to load the proper memory configuration
-  //luca initialize the global Config variable for memory with the data from the config file we edited
   DRAMAddr::initialize(memory.get_starting_address());
 
   // count the number of possible activations per refresh interval, if not given as program argument
   if (program_args.acts_per_trefi==0)
     program_args.acts_per_trefi = dram_analyzer.count_acts_per_trefi();
 
-  Logger::log_info("Jumping to hammering logic");
+  Logger::log_debug("Jumping to hammering logic");
   if (!program_args.load_json_filename.empty()) {
     ReplayingHammerer replayer(config, memory);
     if (program_args.sweeping) {
