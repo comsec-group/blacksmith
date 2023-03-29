@@ -15,6 +15,10 @@ struct ProgramArguments {
   std::string config;
   // path to CSV output
   std::string output;
+  // number of samples for row hit
+  size_t samples_hit;
+  // number of samples for row miss
+  size_t samples_miss;
 };
 
 ProgramArguments program_args;
@@ -39,46 +43,51 @@ int main(int argc, char **argv) {
   DRAMAddr::set_config(config);
   DRAMAddr::initialize(memory.get_starting_address());
 
-  const size_t sampleSize = 10000;
   std::vector<std::tuple<uint64_t, uint64_t, uint64_t>> timings;
-  timings.reserve(3*sampleSize);
+  timings.reserve(program_args.samples_hit + program_args.samples_miss);
   //
   // Measure row hit timing
   //
   Logger::log_info("Searching row hit entry...");
-  auto a1 = DRAMAddr((void*)memory.get_starting_address());
-  volatile char*  a1_row_hit;
-  for(uint8_t* ptr = (uint8_t*)memory.get_starting_address()+4096; ptr < ((uint8_t *)memory.get_starting_address())+memory.get_size(); ptr += 64) {
-    auto candidate_dram = DRAMAddr((void*)ptr);
-    if( a1.bank == candidate_dram.bank && a1.row == candidate_dram.row) {
-      a1_row_hit = (volatile char*)candidate_dram.to_virt();
+  auto a1 = DRAMAddr((void *) memory.get_starting_address());
+  volatile char *a1_row_hit;
+  for (uint8_t *ptr = (uint8_t *) memory.get_starting_address() + 4096;
+       ptr < ((uint8_t *) memory.get_starting_address()) + memory.get_size();
+       ptr += 64) {
+    auto candidate_dram = DRAMAddr((void *) ptr);
+    if (a1.bank == candidate_dram.bank && a1.row == candidate_dram.row) {
+      a1_row_hit = (volatile char *) candidate_dram.to_virt();
       break;
     }
   }
-  Logger::log_info("Found same row entry. Measuring...");
+  Logger::log_info(format_string("Found same row entry. Measuring %lu samples...", program_args.samples_hit));
 
-  for( size_t sampleIdx = 0; sampleIdx < 100000; sampleIdx++) {
-    auto timing = DramAnalyzer::measure_time((volatile char*)a1.to_virt(), a1_row_hit, config.drama_rounds);
-    timings.emplace_back(std::make_tuple(reinterpret_cast<std::uintptr_t>(a1.to_virt()),reinterpret_cast<std::uintptr_t>(a1_row_hit),timing ));
+  for (size_t sampleIdx = 0; sampleIdx < program_args.samples_hit; sampleIdx++) {
+    auto timing = DramAnalyzer::measure_time((volatile char *) a1.to_virt(), a1_row_hit, config.drama_rounds);
+    timings.emplace_back(
+        std::make_tuple(reinterpret_cast<std::uintptr_t>(a1.to_virt()), reinterpret_cast<std::uintptr_t>(a1_row_hit),
+                        timing));
   }
 
   //
   //Measure row conflict timing
   //
 
-  Logger::log_info("Searching row conflict entry... ");
-  volatile char*  a1_row_conflict;
-  for(uint8_t* ptr = (uint8_t*)memory.get_starting_address()+4096; ptr < ((uint8_t *)memory.get_starting_address())+memory.get_size(); ptr += 64) {
-    auto candidate_dram = DRAMAddr((void*)ptr);
-    if( a1.bank == candidate_dram.bank && a1.row != candidate_dram.row) {
-      a1_row_conflict = (volatile char*)candidate_dram.to_virt();
+  Logger::log_info("Searching row conflict entry...");
+  volatile char *a1_row_conflict;
+  for (uint8_t *ptr = (uint8_t *) memory.get_starting_address() + 4096;
+       ptr < ((uint8_t *) memory.get_starting_address()) + memory.get_size(); ptr += 64) {
+    auto candidate_dram = DRAMAddr((void *) ptr);
+    if (a1.bank == candidate_dram.bank && a1.row != candidate_dram.row) {
+      a1_row_conflict = (volatile char *) candidate_dram.to_virt();
       break;
     }
   }
-  Logger::log_info("Found row conflict entry. Measuring...");
-  for( size_t sampleIdx = 0; sampleIdx < 100000; sampleIdx++) {
-    auto timing = DramAnalyzer::measure_time((volatile char*)a1.to_virt(), a1_row_conflict, config.drama_rounds);
-    timings.emplace_back(std::make_tuple(reinterpret_cast<std::uintptr_t>(a1.to_virt()),reinterpret_cast<std::uintptr_t>(a1_row_conflict),timing ));
+  Logger::log_info(format_string("Found row conflict entry. Measuring %lu samples...", program_args.samples_miss));
+  for (size_t sampleIdx = 0; sampleIdx < program_args.samples_miss; sampleIdx++) {
+    auto timing = DramAnalyzer::measure_time((volatile char *) a1.to_virt(), a1_row_conflict, config.drama_rounds);
+    timings.emplace_back(std::make_tuple(reinterpret_cast<std::uintptr_t>(a1.to_virt()),
+                                         reinterpret_cast<std::uintptr_t>(a1_row_conflict), timing));
   }
 
 
@@ -106,7 +115,11 @@ void handle_args(int argc, char **argv) {
                                {"config", {"-c", "--config"},
                                 "loads the specified config file (JSON) as DRAM address config.", 1},
                                {"output", {"-o", "--output"},
-                                "sets the path for access timing measurements (default: access-timings.csv)", 1}
+                                "sets the path for access timing measurements (default: access-timings.csv)", 1},
+                               {"samples-hit", {"--samples-hit"},
+                                "set the number of samples for row buffer hits (default: 10000)", 1},
+                               {"samples-miss", {"--samples-miss"},
+                                "set the number of samples for row buffer miss (default: 10000)", 1},
                            }};
 
   argagg::parser_results parsed_args;
@@ -136,10 +149,25 @@ void handle_args(int argc, char **argv) {
   /**
    * optional parameters
    */
-   if (parsed_args.has_option("output")) {
-     program_args.output = parsed_args["output"].as<std::string>("");
-   } else {
-     program_args.output = "access-timings.csv";
-   }
+  if (parsed_args.has_option("output")) {
+    program_args.output = parsed_args["output"].as<std::string>("");
+  } else {
+    program_args.output = "access-timings.csv";
+  }
   Logger::log_debug(format_string("Set --output=%s", program_args.output.c_str()));
+
+  if (parsed_args.has_option("samples-hit")) {
+    program_args.samples_hit = parsed_args["samples"].as<size_t>(0);
+  } else {
+    program_args.samples_hit = 10000;
+  }
+  Logger::log_debug(format_string("Set --samples-hit=%lu", program_args.samples_hit));
+
+  if (parsed_args.has_option("samples-miss")) {
+    program_args.samples_miss = parsed_args["samples-miss"].as<size_t>(0);
+  } else {
+    program_args.samples_miss = 10000;
+  }
+  Logger::log_debug(format_string("Set --samples-miss=%lu", program_args.samples_miss));
+
 }
