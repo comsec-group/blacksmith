@@ -80,26 +80,3 @@ size_t DramAnalyzer::count_acts_per_trefi(volatile char *a, volatile char *b) {
 
   return activations;
 }
-
-inline uint64_t DramAnalyzer::measure_time(volatile char *a1, volatile char *a2, size_t rounds) {
-  uint64_t before, after, sum, delta;
-  sum = 0;
-
-  for (size_t i = 0; i < rounds; i++) {
-    mfence();
-    before = rdtscp();
-    *a1;
-    *a2;
-    after = rdtscp();
-    mfence();
-    delta = after-before;
-    if( delta < 200 || delta > 430 ) { //reject outliers
-      i--; //if i =0; the i++ from the loop and will set it to 0 again, so no underflow
-    } else {
-      sum += delta;
-    }
-    clflushopt(a1);
-    clflushopt(a2);
-  }
-  return sum / rounds;
-}
