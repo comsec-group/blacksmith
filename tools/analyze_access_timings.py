@@ -25,19 +25,19 @@ def main():
 
     for f in files:
         data = pd.read_csv(f)
-        lowTiming = data[data['timing'] < no_conflict_threshold]
-        print(f"len(<no-conflict-threshold): {lowTiming.count()[0]}")
-        print(f"mean(<no-conflict-threshold): {lowTiming.mean()[0]}")
+        low_timing = data[data['timing'] < no_conflict_threshold]
+        print(f"len(<no-conflict-threshold): {low_timing.count()[0]}")
+        print(f"mean(<no-conflict-threshold): {low_timing.mean()[0]}")
         # build data frame that contains the indices from 'frame', where the
         # timing was over the specified threshold,  as values
 
-        highTiming = data[data['timing'] > conflict_threshold]
-        indicesHighTiming = pd.DataFrame(highTiming.index.array)
-        diffBetweenHighTimings = highTiming.diff()
-        print(f"len(>conflict-threshold): {indicesHighTiming.count()[0]}")
-        print(f"mean(>conflict-threshold): {highTiming.mean()[0]}")
-        print(f"mean(diff(>conflict-threshold)): {diffBetweenHighTimings.mean()[0]}")
-        print(f"std(mean(diff(>conflict-threshold))): {diffBetweenHighTimings.std()[0]}")
+        high_timing = data[data['timing'] > conflict_threshold]
+        indices_high_timing = pd.DataFrame(high_timing.index.array)
+        diff_between_high_timings = high_timing.diff()
+        print(f"len(>conflict-threshold): {indices_high_timing.count()[0]}")
+        print(f"mean(>conflict-threshold): {high_timing.mean()[0]}")
+        print(f"mean(diff(>conflict-threshold)): {diff_between_high_timings.mean()[0]}")
+        print(f"std(mean(diff(>conflict-threshold))): {diff_between_high_timings.std()[0]}")
 
         plt.show()
 
