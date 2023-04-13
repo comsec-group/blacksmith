@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
   Memory memory(config, true);
   memory.allocate_memory();
 
-  // find address sets that create bank conflicts
   DramAnalyzer dram_analyzer(config, memory.get_starting_address());
 
   // initialize the DRAMAddr class to load the proper memory configuration
