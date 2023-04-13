@@ -48,21 +48,22 @@ int main(int argc, char **argv) {
   DRAMAddr::initialize(memory.get_starting_address());
 
   // count the number of possible activations per refresh interval, if not given as program argument
-  if (program_args.acts_per_trefi==0)
-    program_args.acts_per_trefi = dram_analyzer.count_acts_per_trefi();
+  uint64_t acts_per_trefi = config.acts_per_trefi;
+  if (acts_per_trefi == 0)
+    acts_per_trefi = dram_analyzer.count_acts_per_trefi();
 
   Logger::log_debug("Jumping to hammering logic");
   if (!program_args.load_json_filename.empty()) {
     ReplayingHammerer replayer(config, memory);
     if (program_args.sweeping) {
       replayer.replay_patterns_brief(program_args.load_json_filename, program_args.pattern_ids,
-          MB(256), false);
+                                     MB(256), false);
     } else {
       replayer.replay_patterns(program_args.load_json_filename, program_args.pattern_ids);
     }
   } else if (program_args.do_fuzzing && program_args.use_synchronization) {
     FuzzyHammerer::n_sided_frequency_based_hammering(config, dram_analyzer, memory,
-                                                     static_cast<int>(program_args.acts_per_trefi),
+                                                     acts_per_trefi, config.acts_per_trefi != 0,
                                                      program_args.runtime_limit,
                                                      program_args.num_address_mappings_per_pattern,
                                                      program_args.sweeping);
@@ -152,11 +153,6 @@ void handle_args(int argc, char **argv) {
 
   program_args.runtime_limit = parsed_args["runtime-limit"].as<unsigned long>(program_args.runtime_limit);
   Logger::log_debug(format_string("Set --runtime_limit=%ld", program_args.runtime_limit));
-
-  program_args.acts_per_trefi = parsed_args["acts-per-ref"].as<size_t>(program_args.acts_per_trefi);
-  Logger::log_info(format_string("+++ %d", program_args.acts_per_trefi));
-  program_args.fixed_acts_per_ref = (program_args.acts_per_trefi != 0);
-  Logger::log_debug(format_string("Set --acts-per-ref=%d", program_args.acts_per_trefi));
 
   program_args.num_address_mappings_per_pattern = parsed_args["probes"].as<size_t>(program_args.num_address_mappings_per_pattern);
   Logger::log_debug(format_string("Set --probes=%d", program_args.num_address_mappings_per_pattern));

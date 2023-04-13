@@ -9,8 +9,6 @@
 struct ProgramArguments {
   // the duration of the fuzzing run in second
   unsigned long runtime_limit = 120;
-  // no. of activations we can do within a refresh interval
-  size_t acts_per_trefi = 0;
   // path to logfile
   std::string logfile = "/dev/stdout";
   // path to JSON config
@@ -28,7 +26,6 @@ struct ProgramArguments {
   // these two parameters define the default program mode: do fuzzing and synchronize with REFRESH
   bool do_fuzzing = true;
   bool use_synchronization = true;
-  bool fixed_acts_per_ref = false;
 };
 
 extern ProgramArguments program_args;
