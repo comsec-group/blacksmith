@@ -26,6 +26,7 @@ struct ProgramArguments {
   // these two parameters define the default program mode: do fuzzing and synchronize with REFRESH
   bool do_fuzzing = true;
   bool use_synchronization = true;
+  size_t generate_patterns = 0;
 };
 
 extern ProgramArguments program_args;
@@ -34,6 +35,6 @@ int main(int argc, char **argv);
 
 void handle_args(int argc, char **argv);
 
-[[ noreturn ]] void handle_arg_generate_patterns(int num_activations, size_t probes_per_pattern);
+int handle_arg_generate_patterns(BlacksmithConfig &config, size_t num_activations, size_t probes_per_pattern);
 
 #endif //BLACKSMITH_INCLUDE_BLACKSMITH_HPP_

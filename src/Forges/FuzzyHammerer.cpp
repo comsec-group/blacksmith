@@ -371,7 +371,7 @@ void FuzzyHammerer::log_overall_statistics(size_t cur_round, const std::string &
 }
 
 void FuzzyHammerer::generate_pattern_for_ARM(BlacksmithConfig &config,
-                                             int acts,
+                                             size_t acts,
                                              int *rows_to_access,
                                              int max_accesses,
                                              const size_t probes_per_pattern) {

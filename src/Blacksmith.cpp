@@ -28,6 +28,12 @@ int main(int argc, char **argv) {
   // load config
   Logger::log_debug("Loading DRAM config");
   BlacksmithConfig config = BlacksmithConfig::from_jsonfile(program_args.config);
+
+  if (program_args.generate_patterns) {
+    auto num_activations = program_args.generate_patterns;
+    exit(handle_arg_generate_patterns(config, num_activations, program_args.num_address_mappings_per_pattern));
+  }
+
   DRAMAddr::set_config(config);
 
   // prints the current git commit and some program metadata
@@ -80,17 +86,17 @@ int main(int argc, char **argv) {
   return EXIT_SUCCESS;
 }
 
-void handle_arg_generate_patterns(BlacksmithConfig &config, int num_activations, const size_t probes_per_pattern) {
+int handle_arg_generate_patterns(BlacksmithConfig &config, size_t num_activations, const size_t probes_per_pattern) {
   // this parameter is defined in FuzzingParameterSet
   const size_t MAX_NUM_REFRESH_INTERVALS = 32;
   const size_t MAX_ACCESSES = num_activations*MAX_NUM_REFRESH_INTERVALS;
   void *rows_to_access = calloc(MAX_ACCESSES, sizeof(int));
   if (rows_to_access==nullptr) {
     Logger::log_error("Allocation of rows_to_access failed!");
-    exit(EXIT_FAILURE);
+    return EXIT_FAILURE;
   }
   FuzzyHammerer::generate_pattern_for_ARM(config, num_activations, static_cast<int *>(rows_to_access), static_cast<int>(MAX_ACCESSES), probes_per_pattern);
-  exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
 
 void handle_args(int argc, char **argv) {
@@ -105,7 +111,7 @@ void handle_args(int argc, char **argv) {
       {"config", {"-c", "--config"}, "loads the specified config file (JSON) as DRAM address config.", 1},
 
       {"fuzzing", {"-f", "--fuzzing"}, "perform a fuzzing run (default program mode)", 0},
-      //{"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1}, TODO add arg again after refactor
+      {"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1},
       {"replay-patterns", {"-y", "--replay-patterns"}, "replays patterns given as comma-separated list of pattern IDs", 1},
       {"logfile", {"--logfile"}, "log to specified file", 1},
       {"load-json", {"-j", "--load-json"}, "loads the specified JSON file generated in a previous fuzzer run, loads patterns given by --replay-patterns or determines the best ones", 1},
@@ -161,13 +167,12 @@ void handle_args(int argc, char **argv) {
    * program modes
    */
   if (parsed_args.has_option("generate-patterns")) {
-    // TODO refactor program modes
-#if 0
-    auto num_activations = parsed_args["generate-patterns"].as<int>(84);
-    // this must happen AFTER probes-per-pattern has been parsed
-    // note: the following method call does not return anymore
-    handle_arg_generate_patterns(num_activations, program_args.num_address_mappings_per_pattern);
-#endif
+    program_args.generate_patterns = parsed_args["generate-patterns"].as<size_t>(0);
+    Logger::log_debug(format_string("Set --generate-patterns=%u", program_args.generate_patterns));
+    if (program_args.generate_patterns < 1) {
+      Logger::log_error("Program argument '--generate-patterns' must be greater than zero! Cannot continue.");
+      exit(EXIT_FAILURE);
+    }
   } else if (parsed_args.has_option("load-json")) {
     program_args.load_json_filename = parsed_args["load-json"].as<std::string>("");
     if (parsed_args.has_option("replay-patterns")) {

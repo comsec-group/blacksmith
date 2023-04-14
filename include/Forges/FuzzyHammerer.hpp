@@ -43,7 +43,7 @@ class FuzzyHammerer {
                                      size_t best_mapping_num_bitflips, size_t num_effective_patterns);
 
   static void generate_pattern_for_ARM(BlacksmithConfig &config,
-                                       int acts,
+                                       size_t acts,
                                        int *rows_to_access,
                                        int max_accesses,
                                        size_t probes_per_pattern);
