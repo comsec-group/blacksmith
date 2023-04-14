@@ -160,7 +160,7 @@ those timings to a CSV file. After some number of row activations, a REFRESH com
 This REFRESH command results in a longer access time for the subsequent row activation and can be observed by analyzing
 the resulting CSV file. Since two row activations happen per measurement, the expected activations per refresh interval 
 can be approximated by the average of twice the number of measurements between timing peaks. The python script in 
-`tools/analyze_acts_per_ref.py` can be used to determine the correct number of activations per REFRESH interval.
+`tools/visualize_acts_per_ref.py` can be used to determine the correct number of activations per REFRESH interval.
 The number of activations is required for fuzzing using `blacksmith`. You can pass it using the optional 
 `--acts-per-ref` argument. If `--acts-per-ref` is omitted, `blacksmith` periodically determines the activations per 
 refresh cycle while fuzzing.
