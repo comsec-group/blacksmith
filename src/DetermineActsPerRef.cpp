@@ -18,6 +18,8 @@ struct ProgramArguments {
   std::string config;
   // path to measurements output
   std::string output;
+  // number of measurement rounds
+  size_t rounds;
 };
 
 struct ProgramArguments program_args;
@@ -46,9 +48,6 @@ int main(int argc, char** argv) {
   DRAMAddr::set_config(config);
   DRAMAddr::initialize(memory.get_starting_address());
 
-  Logger::log_info("Determining bank conflicts");
-
-  //dram_analyzer.find_bank_conflicts();
   auto addr1 = DRAMAddr((void*)(memory.get_starting_address()));
   DRAMAddr addr2;
   for(size_t offset = 0; offset < memory.get_size(); offset += 64) {
@@ -59,13 +58,21 @@ int main(int argc, char** argv) {
     }
   }
   Logger::log_info(format_string("Choose %s and %s as row conflict addresses", addr1.to_string().c_str(), addr2.to_string().c_str()));
+
+  size_t timings[program_args.rounds];
+  char *a1 = static_cast<char*>(addr1.to_virt());
+  char *a2 = static_cast<char*>(addr1.to_virt());
+  for (size_t i = 0; i < program_args.rounds; ++i) {
+    timings[i] = DramAnalyzer::measure_time(a1, a2, 1);
+  }
+
   Logger::log_info(format_string("Writing acts per ref to file %s", program_args.output.c_str()));
 
   std::ofstream outFile;
   outFile.open(program_args.output);
-  outFile << "activations" << std::endl;
-  for( int i = 0; i < 10;i++) {
-    outFile << DramAnalyzer::count_acts_per_trefi((volatile char*)addr1.to_virt(),(volatile char*)addr2.to_virt()) << std::endl;
+  outFile << "access time in cycles" << std::endl;
+  for(size_t timing: timings) {
+    outFile << timing << std::endl;
   }
   Logger::log_info("Done, goodbye!");
 }
@@ -82,7 +89,9 @@ void handle_args(int argc, char **argv) {
                                {"config", {"-c", "--config"},
                                 "loads the specified config file (JSON) as DRAM address config.", 1},
                                {"output", {"-o", "--output"},
-                                "sets the path for access timing measurements (default: acts-per-ref.csv)", 1}
+                                "sets the path for access timing measurements (default: acts-per-ref.csv)", 1},
+                               {"rounds", {"-r", "--rounds"},
+                                "number of measurement rounds (default: 1000)", 1},
                            }};
 
   argagg::parser_results parsed_args;
@@ -118,4 +127,11 @@ void handle_args(int argc, char **argv) {
     program_args.output = "acts-per-ref.csv";
   }
   Logger::log_debug(format_string("Set --output=%s", program_args.output.c_str()));
+
+  if (parsed_args.has_option("rounds")) {
+    program_args.rounds = parsed_args["rounds"].as<size_t>(1000);
+  } else {
+    program_args.rounds = 1000;
+  }
+  Logger::log_debug(format_string("Set --rounds=%u", program_args.rounds));
 }
