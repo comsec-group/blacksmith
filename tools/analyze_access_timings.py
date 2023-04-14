@@ -7,37 +7,25 @@ import pandas as pd
 
 
 def main():
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 2:
         import os
-        print(f"Usage: {os.path.basename(sys.argv[0])} no-conflict-threshold conflict-threshold file1 [...file2]")
-        print(f"Example: {os.path.basename(sys.argv[0])} 250 300 access-timings.csv")
-        print("\tAnalyze access times from a CSV file, grouping access times in timings less than "
-              "no-conflict-threshold and greater than conflict-threshold.")
+        print(f"Usage: {os.path.basename(sys.argv[0])} file1 [...file2]")
+        print(f"Example: {os.path.basename(sys.argv[0])} access-timings.csv")
+        print("\tVisualize access times from a CSV file")
         exit(255)
 
-    files = sys.argv[3:]
+    files = sys.argv[1:]
 
-    no_conflict_threshold = int(sys.argv[1])
-    conflict_threshold = int(sys.argv[2])
-
-    assert conflict_threshold >= no_conflict_threshold, "conflict threshold must be greater than or equal to " \
-                                                        "no-conflict-threshold "
-
+    #plot each file
+    print("Plotting ", files)
     for f in files:
         data = pd.read_csv(f)
-        low_timing = data[data['timing'] < no_conflict_threshold]
-        print(f"len(<no-conflict-threshold): {low_timing.count()[0]}")
-        print(f"mean(<no-conflict-threshold): {low_timing.mean()[0]}")
-        # build data frame that contains the indices from 'frame', where the
-        # timing was over the specified threshold,  as values
-
-        high_timing = data[data['timing'] > conflict_threshold]
-        indices_high_timing = pd.DataFrame(high_timing.index.array)
-        diff_between_high_timings = high_timing.diff()
-        print(f"len(>conflict-threshold): {indices_high_timing.count()[0]}")
-        print(f"mean(>conflict-threshold): {high_timing.mean()[0]}")
-        print(f"mean(diff(>conflict-threshold)): {diff_between_high_timings.mean()[0]}")
-        print(f"std(mean(diff(>conflict-threshold))): {diff_between_high_timings.std()[0]}")
+        num_bins = 200
+        fig, ax = plt.subplots()
+        ax.set_title(f'Access Times ({f})')
+        ax.hist(data.to_numpy(), num_bins, density=False)
+        ax.set_xlabel('Binned access times')
+        ax.set_ylabel('Count')
 
         plt.show()
 
