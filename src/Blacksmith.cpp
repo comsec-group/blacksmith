@@ -113,7 +113,7 @@ void handle_args(int argc, char **argv) {
       {"fuzzing", {"-f", "--fuzzing"}, "perform a fuzzing run (default program mode)", 0},
       {"generate-patterns", {"-g", "--generate-patterns"}, "generates N patterns, but does not perform hammering; used by ARM port", 1},
       {"replay-patterns", {"-y", "--replay-patterns"}, "replays patterns given as comma-separated list of pattern IDs", 1},
-      {"logfile", {"--logfile"}, "log to specified file", 1},
+      {"logfile", {"-l", "--logfile"}, "log to specified file", 1},
       {"load-json", {"-j", "--load-json"}, "loads the specified JSON file generated in a previous fuzzer run, loads patterns given by --replay-patterns or determines the best ones", 1},
 
       // note that these two parameters don't require a value, their presence already equals a "true"
