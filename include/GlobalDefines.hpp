@@ -38,6 +38,6 @@ uint64_t static inline GB(uint64_t value) {
 // ########################################################
 
 // number of bytes to be allocated
-#define MEM_SIZE GB(1)
+#define MEM_SIZE (GB(1))
 
 #endif /* GLOBAL_DEFINES */
