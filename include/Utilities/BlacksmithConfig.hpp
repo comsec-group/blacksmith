@@ -61,7 +61,6 @@ public:
   size_t hammer_rounds;  // number of rounds to hammer
   size_t drama_rounds;  // number of rounds to measure cache hit/miss latency
   uint64_t acts_per_trefi;  // number of activations per reference cycle (optional, set to zero to determine on the fly)
-  uint64_t memory_size;  // memory size in bytes to allocate
   std::vector<BitDef> row_bits;
   std::vector<BitDef> col_bits;
   std::vector<BitDef> bank_bits;
@@ -76,6 +75,6 @@ public:
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(BlacksmithConfig, name, channels, dimms, ranks,
                                  total_banks, max_rows, threshold, hammer_rounds, drama_rounds,
-                                 acts_per_trefi, memory_size, row_bits, col_bits, bank_bits)
+                                 acts_per_trefi, row_bits, col_bits, bank_bits)
 };
 #endif //BLACKSMITH_BLACKSMITHCONFIG_HPP
