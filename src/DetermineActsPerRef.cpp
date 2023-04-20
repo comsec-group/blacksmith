@@ -49,14 +49,7 @@ int main(int argc, char** argv) {
   DRAMAddr::initialize(memory.get_starting_address());
 
   auto addr1 = DRAMAddr((void*)(memory.get_starting_address()));
-  DRAMAddr addr2;
-  for(size_t offset = 0; offset < memory.get_size(); offset += 64) {
-    auto tmp = DRAMAddr((void*)(memory.get_starting_address()+offset));
-    if( tmp.bank == addr1.bank && tmp.row != addr1.row) {
-      addr2 = tmp;
-      break;
-    }
-  }
+  auto addr2 = addr1.add(0, 1, 0);
   Logger::log_info(format_string("Choose %s and %s as row conflict addresses", addr1.to_string().c_str(), addr2.to_string().c_str()));
 
   size_t timings[program_args.rounds];

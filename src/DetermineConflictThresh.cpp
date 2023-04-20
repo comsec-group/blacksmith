@@ -48,19 +48,9 @@ int main(int argc, char **argv) {
   //
   // Measure row hit timing
   //
-  Logger::log_info("Searching row hit entry...");
   auto a1 = DRAMAddr((void *) memory.get_starting_address());
-  volatile char *a1_row_hit;
-  for (uint8_t *ptr = (uint8_t *) memory.get_starting_address() + 4096;
-       ptr < ((uint8_t *) memory.get_starting_address()) + memory.get_size();
-       ptr += 64) {
-    auto candidate_dram = DRAMAddr((void *) ptr);
-    if (a1.bank == candidate_dram.bank && a1.row == candidate_dram.row) {
-      a1_row_hit = (volatile char *) candidate_dram.to_virt();
-      break;
-    }
-  }
-  Logger::log_info(format_string("Found same row entry. Measuring %lu samples...", program_args.samples_hit));
+  auto *a1_row_hit = (volatile char *) a1.add(0, 0, 1).to_virt();
+  Logger::log_info(format_string("Measuring %lu samples for same row", program_args.samples_hit));
 
   for (size_t sampleIdx = 0; sampleIdx < program_args.samples_hit; sampleIdx++) {
     auto timing = DramAnalyzer::measure_time((volatile char *) a1.to_virt(), a1_row_hit, config.drama_rounds);
@@ -72,18 +62,8 @@ int main(int argc, char **argv) {
   //
   //Measure row conflict timing
   //
-
-  Logger::log_info("Searching row conflict entry...");
-  volatile char *a1_row_conflict;
-  for (uint8_t *ptr = (uint8_t *) memory.get_starting_address() + 4096;
-       ptr < ((uint8_t *) memory.get_starting_address()) + memory.get_size(); ptr += 64) {
-    auto candidate_dram = DRAMAddr((void *) ptr);
-    if (a1.bank == candidate_dram.bank && a1.row != candidate_dram.row) {
-      a1_row_conflict = (volatile char *) candidate_dram.to_virt();
-      break;
-    }
-  }
-  Logger::log_info(format_string("Found row conflict entry. Measuring %lu samples...", program_args.samples_miss));
+  auto *a1_row_conflict = (volatile char *) a1.add(0, 1, 0).to_virt();
+  Logger::log_info(format_string("Measuring %lu samples for differing rows", program_args.samples_miss));
   for (size_t sampleIdx = 0; sampleIdx < program_args.samples_miss; sampleIdx++) {
     auto timing = DramAnalyzer::measure_time((volatile char *) a1.to_virt(), a1_row_conflict, config.drama_rounds);
     timings.emplace_back(std::make_tuple(reinterpret_cast<std::uintptr_t>(a1.to_virt()),
