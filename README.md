@@ -143,16 +143,11 @@ The following configuration contains reasonable default values for `hammer_round
 ## Additional Tools
 
 ### determineConflictThreshold
-The determineConflictThreshold tool helps experimentally determine the value for threshold. Pass a JSON config file 
-using the `--config` parameter. Set threshold to 0 in the JSON config file. After analysis of conflict threshold data,
-update the threshold value in the config file.
-
-### checkAddrFunction
-The `checkAddrFunction` tool can be used to verify the correctness of reverse-engineered memory mapping. It measures
-the timing between all rows on all banks for a given JSON configuration passed with the --config parameter. If the configuration
-is correct, all accesses should take at least threshold cycles. If the tool measures less than threshold cycles
-between row access, an error is logged. All measurements are logged to the output file specified by --output for
-further analysis.
+The `determineConflictThreshold` tool helps experimentally determine the value for `threshold`. Pass a JSON config file 
+using the `--config` parameter. Set threshold to 0 in the JSON config file. The tool repeatedly measures access timings
+between same-bank same-row addresses (low latency) and same-bank differing-row addresses (high latency) and logs those
+timings to a CSV file (`--output` argument). After analysis of conflict threshold data, e.g., by using 
+`tools/visualize_access_timings.py`, update the `threshold` value in the config file.
 
 ### determineActsPerRef
 The `determineActsPerRef` tool helps in determining the number of row activations between two TRR refresh instructions.
@@ -165,6 +160,23 @@ can be approximated by the average of twice the number of measurements between t
 The number of activations is required for fuzzing using `blacksmith`. You can pass it using the optional 
 `--acts-per-ref` argument. If `--acts-per-ref` is omitted, `blacksmith` periodically determines the activations per 
 refresh cycle while fuzzing.
+
+### checkAddrFunction
+The `checkAddrFunction` tool can be used to verify the correctness of reverse-engineered memory mapping. It measures
+the timing between all rows on all banks for a given JSON configuration passed with the --config parameter. If the configuration
+is correct, all accesses should take at least threshold cycles. If the tool measures less than threshold cycles
+between row access, an error is logged. All measurements are logged to the output file specified by --output for
+further analysis.
+
+### tools/visualize_acts_per_ref.py
+The `visualize_acts_per_ref` tool can be used to visualize the data collected with `determineActsPerRef`. From the
+visualization, one can determine the activations per REFRESH interval by observing the common distance between 
+timing peaks.
+
+### tools/visualize_access_timings.py
+This tool can be used to visualize the data collected with `determineConflictThreshold`. The visualization should 
+show two piles, one around the average row buffer hit timing, the other around the average row buffer miss timing. The 
+conflict `threshold` can be choosen somewhere between those two piles.
 
 ## Citing our Work
 
