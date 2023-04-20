@@ -66,6 +66,8 @@ Except for the parameters `--dimm-id` and `--ranks` all other parameters are opt
         generates N patterns, but does not perform hammering; used by ARM port
     -y, --replay-patterns <csv-list>
         replays patterns given as comma-separated list of pattern IDs
+    -l, --logfile
+        log to specified file
 
 ==== Replaying-Specific Configuration =============================
 
@@ -98,41 +100,40 @@ All keys in the config file are required for the `blacksmith` binary.
 
 ### Keys
 
-| Key           | Type                 | Description                                                                                                                                                            | Example                                           |
-|---------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
-| name          | string               | A user-defined name identifying this config                                                                                                                            | "esprimo-d757_i5-6400_gskill-F4-2133C15-16GIS"    |
-| channels      | uint                 | Number of active channels in the system                                                                                                                                | 1                                                 |
-| dimms         | uint                 | Number of active DIMMs in the system                                                                                                                                   | 1                                                 |
-| memory_size   | uint                 | Number of bytes to be allocated by Blacksmith                                                                                                                          | 1073741824                                        |
-| ranks         | uint                 | Number of ranks on the DIMM                                                                                                                                            | 2                                                 |
-| total_banks   | uint                 | Number of *total* banks in the system, i.e., #banks * #ranks                                                                                                           | 32                                                |
-| max_rows      | uint                 | Maximum number of aggressor rows                                                                                                                                       | 30                                                |
-| threshold     | uint                 | Threshold to distinguish between row buffer miss (t > `threshold`) and row buffer hit (t < `threshhold`).                                                              | 400                                               |
-| hammer_rounds | uint                 | Number of rounds to hammer                                                                                                                                             | 1000000                                           |
-| drama_rounds  | uint                 | Number of rounds to measure cache hit/miss latency                                                                                                                     | 1000                                              |
-| row_bits      | [uint &#124; [uint]] | Row Bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix    | [29,28,27,26,25,24,23,22,21,20,19,18]             |
-| col_bits      | [uint &#124; [uint]] | Column bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix | [12,11,10,9,8,7,6,5,4,3,2,1,0]                    |
-| bank_bits     | [uint &#124; [uint]] | Bank bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix   | [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]] |
+| Key            | Type                 | Description                                                                                                                                                            | Example                                           |
+|----------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| name           | string               | A user-defined name identifying this config                                                                                                                            | "esprimo-d757_i5-6400_gskill-F4-2133C15-16GIS"    |
+| channels       | uint                 | Number of active channels in the system                                                                                                                                | 1                                                 |
+| dimms          | uint                 | Number of active DIMMs in the system                                                                                                                                   | 1                                                 |
+| ranks          | uint                 | Number of ranks on the DIMM                                                                                                                                            | 2                                                 |
+| total_banks    | uint                 | Number of *total* banks in the system, i.e., #banks * #ranks                                                                                                           | 32                                                |
+| max_rows       | uint                 | Maximum number of aggressor rows                                                                                                                                       | 30                                                |
+| threshold      | uint                 | Threshold to distinguish between row buffer miss (t > `threshold`) and row buffer hit (t < `threshhold`).                                                              | 400                                               |
+| hammer_rounds  | uint                 | Number of rounds to hammer                                                                                                                                             | 1000000                                           |
+| drama_rounds   | uint                 | Number of rounds to measure cache hit/miss latency                                                                                                                     | 1000                                              |
+| acts_per_trefi | uint                 | Number of measured activations per REFRESH interval (optional, set to zero to make blacksmith determine acts-per-ref on the fly)                                       | 76                                                |
+| row_bits       | [uint &#124; [uint]] | Row Bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix    | [29,28,27,26,25,24,23,22,21,20,19,18]             |
+| col_bits       | [uint &#124; [uint]] | Column bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix | [12,11,10,9,8,7,6,5,4,3,2,1,0]                    |
+| bank_bits      | [uint &#124; [uint]] | Bank bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix   | [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]] |
 
 The values for keys `row_bits`, `col_bits`, and `bank_bits` can be reversed-engineered by using a tool such as DRAMA.
 
 ### Sample JSON Configuration
 
-The following configuration contains the default values previously defined in [`GlobalDefines.hpp`](include/GlobalDefines.hpp)
-as well as reverse-engineered address mappings for a Intel i5-6400 CPU with a single G.SKILL F4-2133C15-16GIS DIMM.
+The following configuration contains reasonable default values for `hammer_rounds` and `drama_rounds` as well as reverse-engineered address mappings for a Intel i5-6400 CPU with a single G.SKILL F4-2133C15-16GIS DIMM.
 
 ```json
 {
   "name": "esprimo-d757_i5-6400_gskill-F4-2133C15-16GIS",
   "channels": 1,
   "dimms": 1,
-  "memory_size": 1073741824,
   "ranks": 2,
   "total_banks": 32,
   "max_rows": 30,
   "threshold": 300,
   "hammer_rounds": 1000000,
   "drama_rounds": 1000,
+  "acts_per_trefi": 76,
   "row_bits": [29,28,27,26,25,24,23,22,21,20,19,18],
   "col_bits": [12,11,10,9,8,7,6,5,4,3,2,1,0],
   "bank_bits": [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]]
