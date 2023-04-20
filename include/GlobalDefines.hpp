@@ -33,7 +33,11 @@ uint64_t static inline GB(uint64_t value) {
 #define FF_BOLD "\033[1m"
 #define F_RESET "\033[0m" // reset to default font face/color
 
-// config
+// ########################################################
+// ################### CONFIG PARAMETERS ##################
+// ########################################################
+
+// number of bytes to be allocated
 #define MEM_SIZE GB(1)
 
 #endif /* GLOBAL_DEFINES */
