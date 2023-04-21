@@ -119,7 +119,7 @@ All keys in the config file are required for the `blacksmith` binary. For pre-ma
 | col_bits       | [uint &#124; [uint]] | Column bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix | [12,11,10,9,8,7,6,5,4,3,2,1,0]                    |
 | bank_bits      | [uint &#124; [uint]] | Bank bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix   | [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]] |
 
-The values for keys `row_bits`, `col_bits`, and `bank_bits` can be reversed-engineered by using a tool such as DRAMA.
+The values for keys `row_bits`, `col_bits`, and `bank_bits` can be reversed-engineered by using a tool such as [DRAMA](https://github.com/IAIK/drama) or [TRResspass' DRAMA](https://github.com/vusec/trrespass/tree/master/drama).
 The values for `channels`, `dimms`, `ranks`, `total_banks`, `threshold`, and `acts_per_trefi` depend on the memory 
 configuration and the CPU in use.
 The values for `max_rows`, `hammer_rounds`, and `drama_rounds` are parameters in blacksmith experiments. 
