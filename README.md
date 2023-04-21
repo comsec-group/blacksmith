@@ -32,22 +32,24 @@ mkdir build \
   && make -j$(nproc)
 ```
 
-Now we can run Blacksmith. For example, we can run Blacksmith in fuzzing mode by passing a random DIMM ID (e.g., `--dimm-id 1`; only used internally for logging into `stdout.log`), we limit the fuzzing to 6 hours (`--runtime-limit 21600`), pass the number of ranks of our current DIMM (`--ranks 1`) to select the proper bank/rank functions, and tell Blacksmith to do a sweep with the best found pattern after fuzzing finished (`--sweeping`): 
+Now we can run Blacksmith. For example, we can run Blacksmith in fuzzing mode by passing a config file (see
+[JSON configuration](#json-configuration)) and tell Blacksmith to do a sweep with the best found pattern after fuzzing 
+finished (`--sweeping`): 
 
 ```bash
-sudo ./blacksmith --dimm-id 1 --runtime-limit 21600 --ranks 1 --sweeping  
+sudo ./blacksmith --runtime-limit 21600 --config config/esprimo-d757_i5-6400_gskill-F4-2133C15-16GIS.json --sweeping --logfile stdout.log  
 ```
 
 While Blacksmith is running, you can use `tail -f stdout.log` to keep track of the current progress (e.g., patterns, found bit flips). You will see a line like 
 ```
 [!] Flip 0x2030486dcc, row 3090, page offset: 3532, from 8f to 8b, detected after 0 hours 6 minutes 6 seconds.
 ```
-in case that a bit flip was found. After finishing the Blacksmith run, you can find a `fuzz-summary.json` that contains the information found in the stdout.log in a machine-processable format. In case you passed the `--sweeping` flag, you can additionally find a `sweep-summary-*.json` file that contains the information of the sweeping pass.
+in case that a bit flip was found. After finishing the Blacksmith run, you can find a `fuzz-summary.json` that contains the information found in the `stdout.log` in a machine-processable format. In case you passed the `--sweeping` flag, you can additionally find a `sweep-summary-*.json` file that contains the information of the sweeping pass.
 
 ## Supported Parameters
 
 Blacksmith supports the command-line arguments listed in the following.
-Except for the parameters `--dimm-id` and `--ranks` all other parameters are optional.
+Except for the `--config` parameter all other parameters are optional.
 
 ```
     -h, --help
@@ -96,7 +98,8 @@ The default values of the parameters can be found in the [`struct ProgramArgumen
 ### Overview
 
 Blacksmith uses a JSON config file for configuration. To provide a path to the config file, use the `--config` flag. 
-All keys in the config file are required for the `blacksmith` binary.
+All keys in the config file are required for the `blacksmith` binary. For pre-made config files, please refer to the 
+[config directory](config/).
 
 ### Keys
 
@@ -117,6 +120,9 @@ All keys in the config file are required for the `blacksmith` binary.
 | bank_bits      | [uint &#124; [uint]] | Bank bits of a given address. For multi-bit schemes, e.g. bank functions, you can pass a list of bits. Each entry in the list determines a row in the address matrix   | [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]] |
 
 The values for keys `row_bits`, `col_bits`, and `bank_bits` can be reversed-engineered by using a tool such as DRAMA.
+The values for `channels`, `dimms`, `ranks`, `total_banks`, `threshold`, and `acts_per_trefi` depend on the memory 
+configuration and the CPU in use.
+The values for `max_rows`, `hammer_rounds`, and `drama_rounds` are parameters in blacksmith experiments. 
 
 ### Sample JSON Configuration
 
@@ -139,12 +145,15 @@ The following configuration contains reasonable default values for `hammer_round
   "bank_bits": [[6, 13], [14, 18], [15, 19], [16, 20], [17, 21]]
 }
 ```
+If you have reverse-engineered the DRAM address mappings for your system, please consider 
+[submitting a pull request](https://github.com/comsec-group/blacksmith/pulls) with your configuration file. This 
+will enable other members of the research community to benefit from your findings and use them for their own experiments.
 
 ## Additional Tools
 
 ### determineConflictThreshold
 The `determineConflictThreshold` tool helps experimentally determine the value for `threshold`. Pass a JSON config file 
-using the `--config` parameter. Set threshold to 0 in the JSON config file. The tool repeatedly measures access timings
+using the `--config` parameter. Set `threshold` to 0 in the JSON config file. The tool repeatedly measures access timings
 between same-bank same-row addresses (low latency) and same-bank differing-row addresses (high latency) and logs those
 timings to a CSV file (`--output` argument). After analysis of conflict threshold data, e.g., by using 
 `tools/visualize_access_timings.py`, update the `threshold` value in the config file.
@@ -157,21 +166,22 @@ This REFRESH command results in a longer access time for the subsequent row acti
 the resulting CSV file. Since two row activations happen per measurement, the expected activations per refresh interval 
 can be approximated by the average of twice the number of measurements between timing peaks. The python script in 
 `tools/visualize_acts_per_ref.py` can be used to determine the correct number of activations per REFRESH interval.
-The number of activations is required for fuzzing using `blacksmith`. You can pass it using the optional 
-`--acts-per-ref` argument. If `--acts-per-ref` is omitted, `blacksmith` periodically determines the activations per 
-refresh cycle while fuzzing.
+The number of activations is required for fuzzing using `blacksmith`. You can pass it using the `acts_per_trefi` key in 
+the config file. If `acts_per_trefi` is set to zero, `blacksmith` periodically determines the activations per refresh 
+cycle while fuzzing.
 
 ### checkAddrFunction
 The `checkAddrFunction` tool can be used to verify the correctness of reverse-engineered memory mapping. It measures
-the timing between all rows on all banks for a given JSON configuration passed with the --config parameter. If the configuration
-is correct, all accesses should take at least threshold cycles. If the tool measures less than threshold cycles
-between row access, an error is logged. All measurements are logged to the output file specified by --output for
-further analysis.
+the average access timing between all rows on all banks for a given JSON configuration passed with the --config parameter. 
+If the configuration is correct, all accesses should take at least `threshold` cycles. If the tool measures less than 
+`threshold` cycles between addresses accesses, an error is logged. All measurements are logged to the output file 
+specified by `--output` for further analysis.
 
 ### tools/visualize_acts_per_ref.py
-The `visualize_acts_per_ref` tool can be used to visualize the data collected with `determineActsPerRef`. From the
-visualization, one can determine the activations per REFRESH interval by observing the common distance between 
-timing peaks.
+The `visualize_acts_per_ref tool` enables users to visualize data collected using `determineActsPerRef`. By analyzing 
+the mean distance between timing peaks in the visualization, one can determine the activations per REFRESH interval. 
+It's important to note that since two address accesses are performed for each measurement, one needs to **multiply the 
+observed distance by two** to obtain the correct value for `acts_per_trefi`.
 
 ### tools/visualize_access_timings.py
 This tool can be used to visualize the data collected with `determineConflictThreshold`. The visualization should 
