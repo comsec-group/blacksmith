@@ -278,6 +278,7 @@ void to_json(nlohmann::json &j, const PatternAddressMapper &p) {
                      {"max_row", p.max_row},
                      {"bank_no", p.bank_no},
                      {"reproducibility_score", p.reproducibility_score},
+                     {"total_banks", p.total_banks},
                      {"code_jitter", *p.code_jitter}
   };
 }
