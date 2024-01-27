@@ -99,7 +99,7 @@ To cite the Blacksmith **paper** in other academic papers, please use the follow
 
 ```
 @inproceedings{20.500.11850/525008,
-  title = {{{BLACKSMITH}}: Rowhammering in the {{Frequency Domain}}},
+  title = {{{BLACKSMITH}}: {{Scalable}} {{Rowhammering}} in the {{Frequency Domain}}},
   shorttitle = {Blacksmith},
   booktitle = {{{IEEE S}}\&{{P}} '22},
   author = {Jattke, Patrick and {van der Veen}, Victor and Frigo, Pietro and Gunter, Stijn and Razavi, Kaveh},
@@ -113,7 +113,7 @@ To cite the Blacksmith **software** in academic papers, please use the following
 
 ```
 @MISC{20.500.11850/525013,
-    title = {{{BLACKSMITH}}: Rowhammering in the {{Frequency Domain}}},
+    title = {{{BLACKSMITH}}: {{Scalable}} {{Rowhammering}} in the {{Frequency Domain}}},
 	copyright = {MIT License},
 	year = {2022-05},
 	author = {Jattke, Patrick and van der Veen, Victor and Frigo, Pietro and Gunter, Stijn and Razavi, Kaveh},
