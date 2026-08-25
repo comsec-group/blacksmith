@@ -97,13 +97,13 @@ void CodeJitter::jit_strict(int num_acts_per_trefi,
 #ifdef ENABLE_JITTING
   asmjit::CodeHolder code;
   code.init(runtime.environment());
-  code.setLogger(logger);
+  code.set_logger(logger);
   asmjit::x86::Assembler a(&code);
 
-  asmjit::Label while1_begin = a.newLabel();
-  asmjit::Label while1_end = a.newLabel();
-  asmjit::Label for_begin = a.newLabel();
-  asmjit::Label for_end = a.newLabel();
+  asmjit::Label while1_begin = a.new_label();
+  asmjit::Label while1_end = a.new_label();
+  asmjit::Label for_begin = a.new_label();
+  asmjit::Label for_end = a.new_label();
 
   // ==== here start's the actual program ====================================================
   // The following JIT instructions are based on hammer_sync in blacksmith.cpp, git commit 624a6492.
@@ -214,7 +214,8 @@ void CodeJitter::jit_strict(int num_acts_per_trefi,
 
   // add the generated code to the runtime.
   asmjit::Error err = runtime.add(&fn, &code);
-  if (err) throw std::runtime_error("[-] Error occurred while jitting code. Aborting execution!");
+  if (err != asmjit::Error::kOk)
+    throw std::runtime_error("[-] Error occurred while jitting code. Aborting execution!");
 
   // uncomment the following line to see the jitted ASM code
   // printf("[DEBUG] asmjit logger content:\n%s\n", logger->corrupted_data());
@@ -226,8 +227,8 @@ void CodeJitter::jit_strict(int num_acts_per_trefi,
 
 #ifdef ENABLE_JITTING
 void CodeJitter::sync_ref(const std::vector<volatile char *> &aggressor_pairs, asmjit::x86::Assembler &assembler) {
-  asmjit::Label wbegin = assembler.newLabel();
-  asmjit::Label wend = assembler.newLabel();
+  asmjit::Label wbegin = assembler.new_label();
+  asmjit::Label wend = assembler.new_label();
 
   assembler.bind(wbegin);
 
