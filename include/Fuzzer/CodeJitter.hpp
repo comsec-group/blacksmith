@@ -13,7 +13,7 @@
 #include "Fuzzer/FuzzingParameterSet.hpp"
 
 #ifdef ENABLE_JITTING
-#include <asmjit/asmjit.h>
+#include <asmjit/x86.h>
 #endif
 
 #ifdef ENABLE_JSON
